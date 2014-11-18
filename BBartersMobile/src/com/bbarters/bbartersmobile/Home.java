@@ -20,7 +20,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -34,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -43,6 +46,8 @@ public class Home extends FragmentActivity
 	ViewPager viewPager;
 	DrawerLayout drawer;
 	ListView drawerList;
+	private String[] drawerListViewItems;
+	private ActionBarDrawerToggle drawerToggle;
 	
 	String URL=Constants.getUrl();
 	
@@ -60,6 +65,7 @@ public class Home extends FragmentActivity
 		viewPager.setPageTransformer(true, new ZoomOutPageTransformer());		
 		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 		
+			
 			
 			@Override
 			public void onPageSelected(int arg0) {
@@ -124,13 +130,42 @@ public class Home extends FragmentActivity
 	actionBar.addTab(tab2);
 	actionBar.addTab(tab3);
 	actionBar.addTab(tab4);
-	
-	}	
+		
 	
 	//sliding drawer code
-	
+	drawerListViewItems = getResources().getStringArray(R.array.items);
+    // get ListView defined in activity_main.xml
+    drawerList = (ListView) findViewById(R.id.left_drawer);
+
+    // Set the adapter for the list view
+    drawerList.setAdapter(new ArrayAdapter<String>(this,
+            R.layout.drawer_listview_item, drawerListViewItems));
+	drawerToggle = new ActionBarDrawerToggle(
+            this,                  /* host Activity */
+            drawer,         /* DrawerLayout object */
+            R.drawable.ic_launcher,  /* nav drawer icon to replace 'Up' caret */
+            0,  /* "open drawer" description */
+            0  /* "close drawer" description */
+            );
+
+    // Set actionBarDrawerToggle as the DrawerListener
+    drawer.setDrawerListener(drawerToggle);
+
+    getActionBar().setDisplayHomeAsUpEnabled(true); 
+
+    // just styling option add shadow the right edge of the drawer
+
+
+}
+
+@Override
+public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    drawerToggle.onConfigurationChanged(newConfig);
+}
+
     
-	//ends
+	//drawer code ends
 	
 	void showMsg(String string)
 	{
@@ -141,6 +176,10 @@ public class Home extends FragmentActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle presses on the action bar items
+		if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        
 	    switch (item.getItemId()) {
 	        case R.id.logout:
 	            logout();
@@ -151,9 +190,7 @@ public class Home extends FragmentActivity
 	        case R.id.ifcMgr:
 	            ifcManager();
 	            return true;
-	        case R.id.home:
-	        	drawer.openDrawer(Gravity.LEFT);
-	        	return true;
+	        
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }

@@ -3,6 +3,7 @@
 	<name>BBartersMobile</name>
 	<comment></comment>
 	<projects>
+		<project>StaggeredGridView-master</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
