@@ -1,5 +1,6 @@
 package com.bbarters.bbartersmobile;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -9,11 +10,14 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
+import com.squareup.picasso.Picasso;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -21,7 +25,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -53,7 +56,11 @@ public class ActionFragment extends Fragment
 	@Override
 	public void onSaveInstanceState(Bundle outState) 
 	{	
-	      	outState.putIntegerArrayList("userId", adapter.getAllUserId());
+		if(adapter!=null)
+		{
+			if(adapter.getAllUserId()!=null)
+			{
+		 	outState.putIntegerArrayList("userId", adapter.getAllUserId());
 	      	outState.putIntegerArrayList("contentId", adapter.getAllContentId());
 	      	outState.putStringArrayList("description", adapter.getAllDescription());
 	      	outState.putStringArrayList("names", adapter.getAllNames());
@@ -61,7 +68,9 @@ public class ActionFragment extends Fragment
 	      	outState.putStringArrayList("times", adapter.getAllTimes());
 	      	outState.putStringArrayList("title", adapter.getAllTitle());
 	      	outState.putStringArrayList("type", adapter.getAllType());
-	        
+			}	
+		}
+	     
 	      	super.onSaveInstanceState(outState);
 	}
 
@@ -106,9 +115,7 @@ public class ActionFragment extends Fragment
 	        		   adapter=new ActionAdapter(uid,cid,des,name,title,picUrl,type,time,ActionFragment.this.getActivity());
 		        	 
 		        	
-		        	 SwingBottomInAnimationAdapter animationAdapter = new SwingBottomInAnimationAdapter(adapter);
-		        	 animationAdapter.setAbsListView(listView);
-		        	 listView.setAdapter(animationAdapter);
+		        	 listView.setAdapter(adapter);
 		
 	   }
 	   else
@@ -248,15 +255,6 @@ public class ActionFragment extends Fragment
 	   }
 		   
 
-		listView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) 
-			{
-			    	showMsg(adapter.getType(position)+adapter.getUserId(position)+"",getActivity());
-			}
-		});
 		
 		
 		listView.setOnItemLongClickListener(new OnItemLongClickListener() {
@@ -306,6 +304,13 @@ public class ActionFragment extends Fragment
 
 
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 class ActionAdapter extends BaseAdapter
 {
 	
@@ -318,6 +323,13 @@ class ActionAdapter extends BaseAdapter
 	ArrayList<String> picUrl;
 	ArrayList<String> type;
 	ArrayList<String> times;
+	
+	View.OnClickListener profileListener;
+	View.OnClickListener previewListener;
+	
+	Context context;
+	
+	String StoragePath;
 	
 	public ArrayList<String> getAllTimes()
 	{
@@ -357,8 +369,8 @@ class ActionAdapter extends BaseAdapter
 	   return userid;	
 	}
 	
-	AQuery aq1;
-	 public ActionAdapter(ArrayList<Integer> uid,ArrayList<Integer> cid,ArrayList<String> t,ArrayList<String> f,ArrayList<String> ti,ArrayList<String> pic,ArrayList<String> typ,ArrayList<String> tim,Context con)
+	
+	public ActionAdapter(ArrayList<Integer> uid,ArrayList<Integer> cid,ArrayList<String> t,ArrayList<String> f,ArrayList<String> ti,ArrayList<String> pic,ArrayList<String> typ,ArrayList<String> tim,Context con)
 	 {
 		 userid=uid;
 		 contentid=cid;
@@ -369,7 +381,13 @@ class ActionAdapter extends BaseAdapter
 		 picUrl=pic;
 		 type=typ;
 		 times=tim;
-		 aq1=new AQuery(con);
+		 
+		 context=con;
+			
+		
+		StoragePath=Constants.getStoragePathUser(con);	
+		
+		
 	 }
 	 
 	@Override
@@ -426,13 +444,41 @@ class ActionAdapter extends BaseAdapter
 	
 	
 	@Override
-	public View getView(int position, View arg1, ViewGroup arg2) 
+	public View getView(final int position, View arg1, ViewGroup arg2) 
 	{
 		TextView content;
 		ImageView image;
 		TextView name;
 		TextView time;
+	
+		 profileListener=new View.OnClickListener() {
+				
+			@Override
+			public void onClick(View v) {
+
+	             Intent intent=new Intent();
+	             intent.setClass(context, ProfilePage.class);
+	             intent.putExtra("id",userid.get(position));
+	             context.startActivity(intent);
+			}
+		};
 		
+		
+		previewListener=new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+
+	             Intent intent=new Intent();
+	             intent.setClass(context, PreviewPage.class);
+	             intent.putExtra("type",type.get(position));
+	             intent.putExtra("contentid",contentid.get(position) );
+	             context.startActivity(intent);
+	             
+			}
+		};
+			
 		if(arg1==null)
 		{
 			arg1=inflater.inflate(R.layout.adapter_action, arg2,false);
@@ -441,8 +487,13 @@ class ActionAdapter extends BaseAdapter
 		    image=(ImageView)arg1.findViewById(R.id.image);
 			 name=(TextView)arg1.findViewById(R.id.name);
 			 time=(TextView)arg1.findViewById(R.id.time);
-			 
-		    arg1.setTag(new ViewHolder(name,content,time,image));		
+	
+			 image.setOnClickListener(profileListener);
+             name.setOnClickListener(profileListener);
+             
+             content.setOnClickListener(previewListener);
+             
+			 arg1.setTag(new ViewHolder(name,content,time,image));		
 			
 		}
 		else
@@ -454,21 +505,69 @@ class ActionAdapter extends BaseAdapter
 			time=vh.time;
 		}
 		
+
+		
 		name.setText(names.get(position));
 		time.setText(times.get(position));
 		
 		content.setText(des.get(position)+"\n"+title.get(position));
-	
-		Log.e("bbarters", picUrl.get(position));
-	
-		AQuery aq=aq1.recycle(arg1);
 		
-		aq.id(image).image(picUrl.get(position),true,true);		
+		
+	   File file=new File(StoragePath,userid.get(position)+"");
+		
+		if(file.exists())
+		{
+			Picasso.with(context).load(file).resize(90, 90).into(image);
+		}
+		else
+		{
+			Picasso.with(context).load(picUrl.get(position)).resize(90, 90).into(image);
+			WriteToStorage storage=new WriteToStorage(file,picUrl.get(position));
+			storage.execute();
+		}
+		
 		
 		return arg1;
 
 	}
 	
 
+	
+}
+
+
+class WriteToStorage extends AsyncTask<String,String,String>
+{
+
+File file;
+
+Bitmap bitmap;
+
+String url;
+
+public WriteToStorage(File f,String u)
+{
+file=f;
+url=u;
+
+}
+
+	@Override
+	protected String doInBackground(String... params) 
+	{
+		bitmap=Constants.getBitmapFromURL(url);
+		Constants.writeBmpToFile(file, bitmap);
+		
+		return null;
+	}
+	
+
+	
+	@Override
+	protected void onPostExecute(String result) {
+		
+		super.onPostExecute(result);
+	}
+	
 	
 }

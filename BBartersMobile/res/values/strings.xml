@@ -16,4 +16,6 @@
         <item>Quizes</item>
         <item>Events</item>
     </string-array>
+    
+	  <string name="title_activity_abcreading">ABCReading</string> 
 </resources>

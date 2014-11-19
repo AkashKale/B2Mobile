@@ -1,5 +1,6 @@
 package com.bbarters.bbartersmobile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -53,7 +54,8 @@ String URL=Constants.getUrl();
 
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile_page);
 		
@@ -72,7 +74,7 @@ String URL=Constants.getUrl();
 	    
       	String url=URL+"mobile_showProfile";     		    												   
 	    
-      	Bundle bundle=getIntent().getExtras();
+      	final Bundle bundle=getIntent().getExtras();
 		 
       	Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("id",bundle.getInt("id"));       		   		    	
@@ -102,7 +104,7 @@ String URL=Constants.getUrl();
 			   
 			    	tvName.setText(strName);
 			        
-			    	Display display=new Display(dpURL,ivDispImg,coverPic,cp);  	
+			    	Display display=new Display(dpURL,ivDispImg,coverPic,cp,bundle.getInt("id"));  	
 		    	    display.execute();
 		    	  }
 		    	  else
@@ -140,27 +142,56 @@ String URL=Constants.getUrl();
          ImageView coverPic;
          String coverPicString;
          Bitmap coverImage;
+         int userid;
          
-         public Display(String ur,ImageView i,ImageView cp,String cpstring)   
+         public Display(String ur,ImageView i,ImageView cp,String cpstring,int id)   
          {
         	 
         	 coverPicString=cpstring.replaceAll("\\\\", "");
         	 coverPic=cp;
         	 url=ur.replaceAll("\\\\","");
         	 iv=i;
+        	 userid=id;
          }
 		
 		@Override
 		protected String doInBackground(String... params) 
 		{
-			image=getBitmapFromURL(url);
-			image=getResizedBitmap(image,230,200);
-			image=getRoundedShape(image);
-			image=imageGlow(image);  	
+			
+			File userFile=new File(Constants.getStoragePathUser(getApplicationContext())+"/"+userid);
+			File coverFile=new File(Constants.getStoragePathCover(getApplicationContext())+"/"+userid);
+			
+			if(userFile.exists())
+			{
+				image=BitmapFactory.decodeFile(userFile.getPath());
+				image=Constants.getResizedBitmap(image,230,200);
+				image=Constants.getRoundedShape(image);
+				image=Constants.imageGlow(image);  
+			}
+			else
+			{
+				image=Constants.getBitmapFromURL(url);
+				Constants.writeBmpToFile(userFile,image);
+				image=Constants.getResizedBitmap(image,230,200);
+				image=Constants.getRoundedShape(image);
+				image=Constants.imageGlow(image);  
+				
+			}
 			
 			
-	    	coverImage=getBitmapFromURL(coverPicString);
-	    	coverImage=toGrayscale(coverImage);
+			if(coverFile.exists())
+			{
+				coverImage=BitmapFactory.decodeFile(coverFile.getPath());
+			}
+			else
+			{	
+				coverImage=Constants.getBitmapFromURL(coverPicString);   
+				coverImage=Constants.toGrayscale(coverImage);
+		    	
+				Constants.writeBmpToFile(coverFile, coverImage);
+			}
+	    
+	    	
 	    	return null;
 		}
 
@@ -179,156 +210,6 @@ String URL=Constants.getUrl();
 		
 		
 		
-		public Bitmap getRoundedShape(Bitmap scaleBitmapImage) 
-		{
-		    int targetWidth = 150;
-		    int targetHeight = 150;
-		    Bitmap targetBitmap = Bitmap.createBitmap(targetWidth, 
-		                        targetHeight,Bitmap.Config.ARGB_8888);
-
-		    Canvas canvas = new Canvas(targetBitmap);
-		    Path path = new Path();
-		    path.addCircle(((float) targetWidth - 1) / 2,
-		        ((float) targetHeight - 1) / 2,
-		        (Math.min(((float) targetWidth), 
-		        ((float) targetHeight)) / 2),
-		        Path.Direction.CCW);
-
-		    canvas.clipPath(path);
-		    Bitmap sourceBitmap = scaleBitmapImage;
-		    canvas.drawBitmap(sourceBitmap, 
-		        new Rect(0, 0, sourceBitmap.getWidth(),
-		        sourceBitmap.getHeight()), 
-		        new Rect(0, 0, targetWidth, targetHeight), null);
-		    return targetBitmap;
-		}
 		
-		
-		
-		
-		
-		public Bitmap getBitmapFromURL(String src) 
-		{
-		    try 
-		    {
-		        Log.e("src",src);
-		        URL url = new URL(src);
-		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		        connection.setDoInput(true);
-		        connection.connect();
-		        InputStream input = connection.getInputStream();
-		        Bitmap myBitmap = BitmapFactory.decodeStream(input);
-		        Log.e("Bitmap","returned");
-		        return myBitmap;
-		    } 
-		    catch (IOException e) 
-		    {
-		        e.printStackTrace();
-		        Log.e("Exception",e.getMessage());
-		        return null;
-		    }
-		}
-		
-
-		
-		
-		
-		public  Bitmap imageGlow(Bitmap src)
-		{
-		int r=0;
-		int g=0;
-		int b=0;
-		// An added margin to the initial image
-		try
-		{
-		    int margin = 16;
-		    int halfMargin = margin / 2;
-		    // the glow radius
-		    int glowRadius = 12;
-
-		    // the glow color
-		    int glowColor = Color.rgb(r, g, b);
-
-		    // The original image to use
-
-		    // extract the alpha from the source image
-		    Bitmap alpha = src.extractAlpha();
-
-		    // The output bitmap (with the icon + glow)
-		    Bitmap bmp =  Bitmap.createBitmap(src.getWidth() + margin, src.getHeight() + margin, Bitmap.Config.ARGB_8888);
-
-		    // The canvas to paint on the image
-		    Canvas canvas = new Canvas(bmp);
-
-		    Paint paint = new Paint();
-		    paint.setColor(glowColor);
-
-		    // outer glow
-		    paint.setMaskFilter(new BlurMaskFilter(glowRadius, Blur.OUTER));//For Inner glow set Blur.INNER
-		    canvas.drawBitmap(alpha, halfMargin, halfMargin, paint);
-
-		    // original icon
-		    canvas.drawBitmap(src, halfMargin, halfMargin, null);
-
-
-		return bmp;
-		}
-		catch(NullPointerException e)
-		{
-			e.printStackTrace();
-			return src;
-		}
-
-
-		}
-		
-		
-		
-		
-		
-		public Bitmap toGrayscale(Bitmap bmpOriginal)
-		{        
-		    int width, height;
-		    height = bmpOriginal.getHeight();
-		    width = bmpOriginal.getWidth();    
-
-		    Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-		    Canvas c = new Canvas(bmpGrayscale);
-		    Paint paint = new Paint();
-		    ColorMatrix cm = new ColorMatrix();
-		    cm.setSaturation(0);
-		    ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
-		    paint.setColorFilter(f);
-		    c.drawBitmap(bmpOriginal, 0, 0, paint);
-		    return bmpGrayscale;
-		}
-		
-		
-		
-		public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
-			 
-			int width = bm.getWidth();
-			 
-			int height = bm.getHeight();
-			 
-			float scaleWidth = ((float) newWidth) / width;
-			 
-			float scaleHeight = ((float) newHeight) / height;
-			 
-			// CREATE A MATRIX FOR THE MANIPULATION
-			 
-			Matrix matrix = new Matrix();
-			 
-			// RESIZE THE BIT MAP
-			 
-			matrix.postScale(scaleWidth, scaleHeight);
-			 
-			// RECREATE THE NEW BITMAP
-			 
-			Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
-			 
-			return resizedBitmap;
-			 
-			}
 	}
 }

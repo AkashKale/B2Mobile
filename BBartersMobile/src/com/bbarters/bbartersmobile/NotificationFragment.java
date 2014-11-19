@@ -1,5 +1,6 @@
 package com.bbarters.bbartersmobile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,11 +11,12 @@ import org.json.JSONObject;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
-import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
+import com.squareup.picasso.Picasso;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -193,9 +195,7 @@ public class NotificationFragment extends Fragment
 			    			
 			    			adapter=new NotificationAdapter(getActivity(),picUrl,message,link);
 			    			
-			    			 SwingBottomInAnimationAdapter animationAdapter = new SwingBottomInAnimationAdapter(adapter);
-		  		        	 animationAdapter.setAbsListView(list);
-		  		        	 list.setAdapter(animationAdapter);  
+			    			 list.setAdapter(adapter);  
 			    		}
 			    		else
 			    		{
@@ -266,22 +266,22 @@ public class NotificationFragment extends Fragment
 
 class NotificationAdapter extends BaseAdapter
 {
-
 	LayoutInflater inflater;
 	ArrayList<String> picUrl;
 	ArrayList<String> contents;
 	ArrayList<String> links;
+	Context context;
+	String storagePath;
 	
-	AQuery aq1;
-	
-	
-	public NotificationAdapter(Context context,ArrayList<String> p,ArrayList<String> c,ArrayList<String> l)
+	public NotificationAdapter(Context con,ArrayList<String> p,ArrayList<String> c,ArrayList<String> l)
 	{
+		context=con;
 		inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		picUrl=p;
 		contents=c;
 		links=l;
-		aq1=new AQuery(context);
+		storagePath=Constants.getStoragePathUser(con)+"/";
+		
 	}
 	
 	
@@ -315,13 +315,12 @@ class NotificationAdapter extends BaseAdapter
 		 
 		  public ViewHolder(TextView c,ImageView i)
 		    {
-		       content=c;
-		      
-		       image=i;
-		     
+		       content=c; 
+		       image=i;		     
 		    }
 		    
 	}
+	
 	
 	@Override
 	public View getView(int position, View arg1, ViewGroup arg2) 
@@ -346,13 +345,25 @@ class NotificationAdapter extends BaseAdapter
 			image=vh.image;			
 		}
 		
-	
-		content.setText(contents.get(position));
+		content.setText(contents.get(position));			
 		
-		AQuery aq=aq1.recycle(arg1);
+	/*	File file=new File(storagePath+userid.get(position));
 		
-		aq.id(image).image(picUrl.get(position),true,true);	
-	   
+		if(file.exists())	
+		{
+			Picasso.with(context).load(file).resize(90, 90).into(image);				
+		}
+		else
+		{
+			Bitmap map=Constants.getBitmapFromURL(picUrl.get(position));
+			
+			Constants.writeBmpToFile(file, map);
+			
+			Picasso.with(context).load(picUrl.get(position)).resize(90, 90).into(image);
+		}*/
+		
+		Picasso.with(context).load(picUrl.get(position)).resize(90, 90).into(image);
+		
 		return arg1;
 	}
 	

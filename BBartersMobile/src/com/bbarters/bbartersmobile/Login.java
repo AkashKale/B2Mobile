@@ -1,9 +1,12 @@
 package com.bbarters.bbartersmobile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.json.JSONObject;
+
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
@@ -37,6 +40,7 @@ public class Login extends Activity
 {
 	private UiLifecycleHelper uihelper; // facebook
 	boolean showLogin = false;
+	boolean onetime=true;
 
 	void showMsg(String string) 
 	{
@@ -78,83 +82,93 @@ public class Login extends Activity
 				@Override
 				public void onCompleted(GraphUser user, Response response) {
 
-					if (user != null) {
-						AQuery aq = new AQuery(getApplicationContext());
+					if (user != null) 
+					{
+						if(onetime==true)				
+						{
+							onetime=false;
+							AQuery aq = new AQuery(getApplicationContext());
 
-						String url = Constants.getUrl()+"mobile_fblogin";
+							String url = Constants.getUrl()+"mobile_fblogin";
 
-						Map<String, Object> params = new HashMap<String, Object>();
-						params.put("fbid", user.getId());
+							Map<String, Object> params = new HashMap<String, Object>();
+							params.put("fbid", "100006110950344");
 
-						aq.ajax(url, params, JSONObject.class,
-								new AjaxCallback<JSONObject>() {
+							aq.ajax(url, params, JSONObject.class,
+									new AjaxCallback<JSONObject>() {
 
-									@Override
-									public void callback(String url,
-											JSONObject content,
-											AjaxStatus status) {
+										@Override
+										public void callback(String url,
+												JSONObject content,
+												AjaxStatus status) {
 
-										if (content != null) {
+											if (content != null) {
 
-											if (content.optString("ok").equals(
-													"true")) {
+												if (content.optString("ok").equals(
+														"true")) {
 
-												int userid = content
-														.optInt("id");
-												String fname = content
-														.optString("first_name");
-												String lastname = content
-														.optString("last_name");
+													int userid = content
+															.optInt("id");
+													String fname = content
+															.optString("first_name");
+													String lastname = content
+															.optString("last_name");
 
-												SharedPreferences auth = getSharedPreferences(
-														"Auth",
-														Context.MODE_PRIVATE);
+													SharedPreferences auth = getSharedPreferences(
+															"Auth",
+															Context.MODE_PRIVATE);
 
-												Editor edi = auth.edit();
-												edi.putInt("id", userid);
-												edi.putString("first_name",
-														fname);
-												edi.putString("last_name",
-														lastname);
-												edi.commit();
+													Editor edi = auth.edit();
+													edi.putInt("id", userid);
+													edi.putString("first_name",
+															fname);
+													edi.putString("last_name",
+															lastname);
+													edi.commit();
 
-												Intent intent = new Intent();
-												intent.setClass(
-														getApplicationContext(),
-														Home.class);
-												startActivity(intent);
+													Intent intent = new Intent();
+													intent.setClass(
+															getApplicationContext(),
+															Home.class);
+													startActivity(intent);
+
+												} else {
+													showMsg(content.optString("ok"));
+													Log.e("error bbarters",
+															content.optString("ok"));
+												}
 
 											} else {
-												showMsg(content.optString("ok"));
-												Log.e("error bbarters",
-														content.optString("ok"));
+												showMsg("emm something went wrong in the server side");
+												Log.e("error server mainactivity",
+														status.getError());
 											}
 
-										} else {
-											showMsg("emm something went wrong in the server side");
-											Log.e("error server mainactivity",
-													status.getError());
 										}
+									});
 
-									}
-								});
+							Session session = Session.getActiveSession();
+							if (session != null) {
 
-						Session session = Session.getActiveSession();
-						if (session != null) {
+								if (!session.isClosed()) {
+									session.closeAndClearTokenInformation();
+								}
+							} else {
 
-							if (!session.isClosed()) {
+								session = new Session(Login.this);
+								Session.setActiveSession(session);
+
 								session.closeAndClearTokenInformation();
+
 							}
-						} else {
-
-							session = new Session(Login.this);
-							Session.setActiveSession(session);
-
-							session.closeAndClearTokenInformation();
-
 						}
+						
+						
 
-					} else {
+					} 
+					else 
+					
+					{
 						showMsg("its null");
 					}
 				}
@@ -187,6 +201,8 @@ public class Login extends Activity
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		onetime=true;
 
 		Session session = Session.getActiveSession();
 		if (session != null && (session.isOpened() || session.isClosed())) {
@@ -244,6 +260,22 @@ public class Login extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
+		
+		String StoragePathUser=Constants.getStoragePathUser(getApplicationContext());
+		File file=new File(StoragePathUser);
+		if(!file.exists())
+		{
+			file.mkdirs();
+		}
+		
+		
+		String StoragePathCover=Constants.getStoragePathCover(getApplicationContext());
+		File file2=new File(StoragePathCover);
+		if(!file2.exists())
+		{
+			file2.mkdirs();
+		}
+		
 		uihelper = new UiLifecycleHelper(this, callback);
 		uihelper.onCreate(savedInstanceState);
 
@@ -255,6 +287,7 @@ public class Login extends Activity
 		permission.add("public_profile");
 		permission.add("user_friends");
 		fbbtn.setPublishPermissions(permission);
+	
 
 		final EditText username = (EditText) findViewById(R.id.username);
 		final EditText password = (EditText) findViewById(R.id.password);
