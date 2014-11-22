@@ -48,27 +48,6 @@
         android:text="Title"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <ImageView
-        android:id="@+id/profileImage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:src="@drawable/abc_ab_bottom_solid_dark_holo" />
-
-    <TextView
-        android:id="@+id/profileName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/profileImage"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/profileImage"
-        android:layout_toRightOf="@+id/profileImage"
-        android:gravity="center"
-        android:paddingLeft="10dp"
-        android:text="ProfileName"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
     <TextView
         android:id="@+id/type"
         android:layout_width="fill_parent"
@@ -84,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/title"
-        android:layout_below="@+id/profileName"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

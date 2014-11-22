@@ -13,7 +13,10 @@ import com.androidquery.callback.AjaxStatus;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -32,9 +35,21 @@ import android.widget.TextView;
 public class PreviewPage extends Activity {
 
 	String URL=Constants.getUrl();
+	 AQuery aq;
+	
+	 int contentid;
+	 int authid;
+	String type;
+	
+	@Override
+	protected void onDestroy() 
+	{
+aq.ajaxCancel();
+aq=null;
+		super.onDestroy();
+	}
 
-	
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -57,20 +72,32 @@ public class PreviewPage extends Activity {
 	final	TextView  des=(TextView)findViewById(R.id.des);
 	final 	Button    read=(Button)findViewById(R.id.read);
 	
-		String type=getIntent().getExtras().getString("type");
-		int contentid=getIntent().getExtras().getInt("contentid");
-		
+		type=getIntent().getExtras().getString("type");
+		contentid=getIntent().getExtras().getInt("contentid");
+		 SharedPreferences auth = getSharedPreferences("Auth",Context.MODE_PRIVATE);
+		authid=auth.getInt("id",0);
+			
 		typeText.setText(type);
 		
 		
-		final AQuery aq = new AQuery(getApplicationContext());
+		aq = new AQuery(getApplicationContext());
 
 		String url = URL+"mobile_getPreview";
 
 		
+		
 		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("authid", auth.getInt("id",0));
 		params.put("contentid", contentid);
 		params.put("type",type);
+		
+		
+		
+		//authid
+		//authorid
+		//cost
+		//type
+		//contentid
 		
 		aq.ajax(url, params, JSONObject.class,
 				new AjaxCallback<JSONObject>() 
@@ -98,8 +125,11 @@ public class PreviewPage extends Activity {
 						     profileName.setText(content.optString("author_name"));
 						     title.setText(content.optString("title"));
 						     ifc.setText("IFC:"+content.optString("ifc")+" | Readers:"+content.optInt("no_readers"));
+						     
+						     if(!type.equals("media"))
 						     des.setText(content.optString("desc"));
-						
+						     else
+						     des.setText("");
 						
 						     profileName.setOnClickListener(new View.OnClickListener() {
 								
@@ -138,9 +168,82 @@ public class PreviewPage extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				Intent intent=new Intent();
-				intent.setClass(getApplicationContext(), ABCReading.class);
-				startActivity(intent);
+				
+				
+				AQuery aq=new AQuery(getApplicationContext());
+	
+
+				String url = URL+"mobile_Checkifc";
+				
+				Map<String, Object> params = new HashMap<String, Object>();
+				
+				params.put("authid", authid);
+				params.put("contentid", contentid);
+				params.put("type",type);
+				
+				aq.ajax(url, params, JSONObject.class,
+						new AjaxCallback<JSONObject>() 
+						{
+
+							@Override
+							public void callback(String url,final JSONObject content, AjaxStatus status) 
+							{
+								
+								Log.e("preview", content.toString());
+								
+								//cost
+								//ok =free(read) true dialog   
+								//userifc
+								Constants.showMsg(content.optString("ok"), getApplicationContext());
+								
+								
+								if(content.optString("ok").equals("free"))
+								{
+									Intent intent=new Intent();
+									intent.setClass(getApplicationContext(), ABCReading.class);
+									startActivity(intent);
+									
+								}
+								else if(content.optString("ok").equals("true"))
+								{
+									
+									int userifc=content.optInt("userifc");
+									int cost=content.optInt("cost");
+									
+									AlertDialog.Builder build=new AlertDialog.Builder(PreviewPage.this);
+									build.setMessage("you have :"+userifc+"\n cost :"+cost+"\n you will have :"+(userifc-cost));
+									build.setPositiveButton("Buy", new DialogInterface.OnClickListener() {
+										
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+									
+											Intent intent=new Intent();
+											intent.setClass(getApplicationContext(), ABCReading.class);
+											startActivity(intent);
+											
+											dialog.dismiss();
+										}
+									});
+									
+									build.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+										
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											
+											dialog.dismiss();
+										}
+									});
+				                
+									build.show();
+									
+								}
+								else 
+								{
+									Constants.showMsg(content.optString("ok"), getApplicationContext());
+								}
+	
+							}
+						});
 			}
 		});
 		

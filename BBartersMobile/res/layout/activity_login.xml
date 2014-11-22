@@ -86,11 +86,12 @@
             android:layout_height="wrap_content"
             android:text="Login with Twitter" />
 
-        <Button
+        <com.google.android.gms.common.SignInButton
             android:id="@+id/glogin"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Login with Google+" />
+           />
+        
     </LinearLayout>
 
 </RelativeLayout>

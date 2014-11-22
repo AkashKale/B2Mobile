@@ -36,6 +36,7 @@ public class NotificationFragment extends Fragment
 {
 	NotificationAdapter adapter;
 	String URL=Constants.getUrl();
+	int listItem=0;
 	
 	public NotificationFragment() 
 	{
@@ -130,6 +131,18 @@ public class NotificationFragment extends Fragment
 		{
 			type="media";
 		}
+		else if(string.toLowerCase().contains("resource"))
+		{
+			type="resource";
+		}
+		else if(string.toLowerCase().contains("poll"))
+		{
+			type="poll";
+		}
+		else if(string.toLowerCase().contains("recco"))
+		{
+			type="recco";
+		}
 		
 		return type;
 	}
@@ -148,6 +161,7 @@ public class NotificationFragment extends Fragment
 		
 		Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("id",auth.getInt("id", 0)); 
+	    params.put("no", listItem);
 	    
 	    String url=URL+"mobile_getNotification";
 	    
@@ -158,6 +172,9 @@ public class NotificationFragment extends Fragment
 		    {
 		    	
 		
+		    	Log.e("bbarters notification",content.toString());
+		    	
+		    	
 		    	if(content.optString("ok").equals("true"))
 		    	{
 		    		try
@@ -188,18 +205,18 @@ public class NotificationFragment extends Fragment
 			    				 link.add(ob.optString("link"));
 			    			    
                            
-			    				picUrl.add(((String) pic_url.get(i)).replaceAll("\\\\","").replaceAll("b2.com", Constants.getDomainName()));
+			    				picUrl.add((String)pic_url.get(i));
 			    				
 			    				
 			    			}
+			    			listItem+=20;
 			    			
-			    			adapter=new NotificationAdapter(getActivity(),picUrl,message,link);
-			    			
+			    			adapter=new NotificationAdapter(getActivity(),picUrl,message,link);			    			
 			    			 list.setAdapter(adapter);  
 			    		}
 			    		else
 			    		{
-			    			ActionFragment.showMsg("No New Notification",getActivity());
+			    			Constants.showMsg("No New Notification",getActivity());
 			    		}
 		    		}
 		    		
@@ -207,7 +224,6 @@ public class NotificationFragment extends Fragment
 		    		{
 		    			e.printStackTrace();
 		    		}
-		    		
 		    		
 		    	}
 		    	else
@@ -220,7 +236,8 @@ public class NotificationFragment extends Fragment
 		    }
 	      });
 		
-		list.setOnItemClickListener(new OnItemClickListener() {
+		list.setOnItemClickListener(new OnItemClickListener() 
+		{
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -239,6 +256,7 @@ public class NotificationFragment extends Fragment
 		    {
 		    	showMsg(getType(adapter.links.get(position)));
 		    	showMsg(getIdFromString(adapter.links.get(position))+"");
+		
 		    	Intent intent=new Intent();
 		    	intent.setClass(getActivity(), PreviewPage.class);
 		    	intent.putExtra("type", getType(adapter.links.get(position)));
@@ -280,8 +298,7 @@ class NotificationAdapter extends BaseAdapter
 		picUrl=p;
 		contents=c;
 		links=l;
-		storagePath=Constants.getStoragePathUser(con)+"/";
-		
+		storagePath=Constants.getStoragePathUser(con)+"/";		
 	}
 	
 	
@@ -347,7 +364,8 @@ class NotificationAdapter extends BaseAdapter
 		
 		content.setText(contents.get(position));			
 		
-	/*	File file=new File(storagePath+userid.get(position));
+	/*
+	  	File file=new File(storagePath+userid.get(position));
 		
 		if(file.exists())	
 		{
@@ -360,7 +378,10 @@ class NotificationAdapter extends BaseAdapter
 			Constants.writeBmpToFile(file, map);
 			
 			Picasso.with(context).load(picUrl.get(position)).resize(90, 90).into(image);
-		}*/
+		}
+		
+	
+	*/
 		
 		Picasso.with(context).load(picUrl.get(position)).resize(90, 90).into(image);
 		

@@ -17,12 +17,19 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.plus.PlusClient;
+import com.google.android.gms.plus.model.people.Person;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.IntentSender.SendIntentException;
 import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -41,6 +48,8 @@ public class Login extends Activity
 	private UiLifecycleHelper uihelper; // facebook
 	boolean showLogin = false;
 	boolean onetime=true;
+	 private PlusClient mPlusClient;  
+	 private int REQUEST_CODE_RESOLVE_ERR=301;
 
 	void showMsg(String string) 
 	{
@@ -216,6 +225,13 @@ public class Login extends Activity
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		uihelper.onActivityResult(requestCode, resultCode, data);
+		
+		if(requestCode==REQUEST_CODE_RESOLVE_ERR&&resultCode==RESULT_OK)
+		{
+		   mPlusClient.disconnect();
+		   mPlusClient.connect();
+		}
+		
 	}
 
 	@Override
@@ -276,6 +292,9 @@ public class Login extends Activity
 			file2.mkdirs();
 		}
 		
+		
+/////////////////////////////////////////////////////////////facebook login////////////////////////////////////////////////////////////////
+		
 		uihelper = new UiLifecycleHelper(this, callback);
 		uihelper.onCreate(savedInstanceState);
 
@@ -288,13 +307,137 @@ public class Login extends Activity
 		permission.add("user_friends");
 		fbbtn.setPublishPermissions(permission);
 	
+//////////////////////////////////////////////////////google login//////////////////////////////////////////////////////////////////////
+		
+mPlusClient=new PlusClient.Builder(getApplicationContext(), new ConnectionCallbacks() {
+			
+			@Override
+			public void onDisconnected() 
+			{
+				
+			}
+			
+			@Override
+			public void onConnected(Bundle arg0) 
+			{
+			    Person person=mPlusClient.getCurrentPerson();	
+			    
+			  
+			    
+			    AQuery aq = new AQuery(getApplicationContext());
+
+				String url = Constants.getUrl()+"mobile_glogin";
+
+				Map<String, Object> params = new HashMap<String, Object>();
+				params.put("gid", person.getId());
+
+			    
+			    aq.ajax(url, params, JSONObject.class,
+						new AjaxCallback<JSONObject>() {
+
+							@Override
+							public void callback(String url,
+									JSONObject content,
+									AjaxStatus status) {
+
+								if (content != null) {
+
+									if (content.optString("ok").equals(
+											"true")) {
+
+										int userid = content
+												.optInt("id");
+										String fname = content
+												.optString("first_name");
+										String lastname = content
+												.optString("last_name");
+
+										SharedPreferences auth = getSharedPreferences(
+												"Auth",
+												Context.MODE_PRIVATE);
+
+										Editor edi = auth.edit();
+										edi.putInt("id", userid);
+										edi.putString("first_name",
+												fname);
+										edi.putString("last_name",
+												lastname);
+										edi.commit();
+
+										Intent intent = new Intent();
+										intent.setClass(
+												getApplicationContext(),
+												Home.class);
+										startActivity(intent);
+
+									} else {
+										showMsg(content.optString("ok"));
+										Log.e("error bbarters",
+												content.optString("ok"));
+									}
+
+								} else {
+									showMsg("emm something went wrong in the server side");
+									Log.e("error server mainactivity",
+											status.getError());
+								}
+
+							}
+						});
+			    
+			    
+			    
+			}
+		}, new OnConnectionFailedListener() {
+			
+			@Override
+			public void onConnectionFailed(ConnectionResult result) {
+
+				 
+		        if (result.hasResolution()) {
+		   
+		            try {
+		                result.startResolutionForResult(Login.this, REQUEST_CODE_RESOLVE_ERR);
+		            } catch (SendIntentException e) {
+		                mPlusClient.disconnect();
+		                mPlusClient.connect();
+		            }
+		        }			
+			}
+		}).build();
+
+
+SignInButton googleSignIn=(SignInButton)findViewById(R.id.glogin);
+
+googleSignIn.setOnClickListener(new View.OnClickListener() {
+	
+	@Override
+	public void onClick(View v) 
+	{
+		   if (!mPlusClient.isConnected()) {
+
+                mPlusClient.connect();
+              showMsg("signed in google+");
+                
+            } else if (mPlusClient.isConnected()) 
+            {
+                {
+                    mPlusClient.clearDefaultAccount();
+                    mPlusClient.disconnect();
+                    showMsg("signed  out of google+");
+            	    
+                }
+            }
+		
+	}
+});
+		////////////////////////////////////////////////normal login////////////////////////////////////////////////////////////////////////////
 
 		final EditText username = (EditText) findViewById(R.id.username);
 		final EditText password = (EditText) findViewById(R.id.password);
 		final TextView bbText = (TextView) findViewById(R.id.bbText);
 
 		final Button tlogin = (Button) findViewById(R.id.tlogin);
-		final Button glogin = (Button) findViewById(R.id.glogin);
 		final ProgressBar pbar = (ProgressBar) findViewById(R.id.pBar);
 		final Button socialBtn = (Button) findViewById(R.id.socialBtn);
 		final LinearLayout socialLayout = (LinearLayout) findViewById(R.id.socialLogin);
@@ -303,8 +446,14 @@ public class Login extends Activity
 		username.setAlpha(0);
 		password.setAlpha(0);
 		btn.setAlpha(0);
-		bbText.setTranslationY(150);
-		pbar.setTranslationY(150);
+		
+		int screen=getWindowManager().getDefaultDisplay().getHeight();		
+		screen=screen/2;
+		screen=screen-(screen/2)/2;
+		
+		bbText.setTranslationY(screen);
+		pbar.setTranslationY(screen);
+		
 		socialBtn.setAlpha(0);
 		socialLayout.setTranslationY(180);
 		socialLayout.setAlpha(0);
