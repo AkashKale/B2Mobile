@@ -40,6 +40,7 @@ public class PreviewPage extends Activity {
 	 int contentid;
 	 int authid;
 	String type;
+	int authorid;
 	
 	@Override
 	protected void onDestroy() 
@@ -74,6 +75,7 @@ aq=null;
 	
 		type=getIntent().getExtras().getString("type");
 		contentid=getIntent().getExtras().getInt("contentid");
+		
 		 SharedPreferences auth = getSharedPreferences("Auth",Context.MODE_PRIVATE);
 		authid=auth.getInt("id",0);
 			
@@ -114,7 +116,7 @@ aq=null;
 
 							String contentPic=Constants.getUrl()+content.optString("content_pic_url");
 							String profilePic=Constants.setReplacement(content.optString("author_pic_url"));
-							
+				            authorid=content.optInt("author_id");			
 							
 				           LoadActionbar load=new LoadActionbar(profileImage,profilePic,content.optInt("author_id"));
 				           load.execute();
@@ -181,6 +183,7 @@ aq=null;
 				params.put("contentid", contentid);
 				params.put("type",type);
 				
+				Log.e("bbarters pereviewpage sending","authid:"+authid+" contentid:"+contentid+" type:"+type);
 				aq.ajax(url, params, JSONObject.class,
 						new AjaxCallback<JSONObject>() 
 						{
@@ -194,6 +197,7 @@ aq=null;
 								//cost
 								//ok =free(read) true dialog   
 								//userifc
+								
 								Constants.showMsg(content.optString("ok"), getApplicationContext());
 								
 								
@@ -201,6 +205,8 @@ aq=null;
 								{
 									Intent intent=new Intent();
 									intent.setClass(getApplicationContext(), ABCReading.class);
+									intent.putExtra("contentId",contentid );
+									intent.putExtra("type", type);
 									startActivity(intent);
 									
 								}
@@ -208,20 +214,60 @@ aq=null;
 								{
 									
 									int userifc=content.optInt("userifc");
-									int cost=content.optInt("cost");
+									final int cost=content.optInt("cost");
 									
 									AlertDialog.Builder build=new AlertDialog.Builder(PreviewPage.this);
 									build.setMessage("you have :"+userifc+"\n cost :"+cost+"\n you will have :"+(userifc-cost));
 									build.setPositiveButton("Buy", new DialogInterface.OnClickListener() {
 										
 										@Override
-										public void onClick(DialogInterface dialog, int which) {
+										public void onClick(final DialogInterface dialog, int which) {
 									
-											Intent intent=new Intent();
-											intent.setClass(getApplicationContext(), ABCReading.class);
-											startActivity(intent);
+
+											AQuery aqq=new AQuery(getApplicationContext());
 											
-											dialog.dismiss();
+
+											String url = URL+"mobile_reduceIfc";
+											
+											Map<String, Object> params = new HashMap<String, Object>();
+											
+											params.put("authid", authid);
+											params.put("contentid", contentid);
+											params.put("type",type);
+											params.put("cost", cost);
+											params.put("authorid",authorid );
+											
+										Log.e("bbarters purchasing", "authid:"+authid+" contentid:"+contentid+" type:"+type+" cost:"+cost+" authorid:"+authorid);
+											
+											aqq.ajax(url, params, String.class,
+													new AjaxCallback<String>() 
+													{
+
+														@Override
+														public void callback(String url,final String content, AjaxStatus status) 
+														{
+															
+															Log.e("purchase",content);
+										
+															dialog.dismiss();
+															
+															if(content.equals("true"))
+															{
+																Intent intent=new Intent();
+																intent.setClass(getApplicationContext(), ABCReading.class);
+																intent.putExtra("contentId",contentid );
+																intent.putExtra("type", type);
+																startActivity(intent);
+																
+															}
+															else
+															{
+															Constants.showMsg(content, getApplicationContext());	
+															}
+
+														}
+													});
+											
 										}
 									});
 									
@@ -280,12 +326,9 @@ aq=null;
 			{
 				 bitmap=Constants.getBitmapFromURL(url);
 				 Constants.writeBmpToFile(file, bitmap);
-	              bitmap=Constants.getRoundedShape(bitmap);
-				
+	              bitmap=Constants.getRoundedShape(bitmap);			
 			}
 			
-             
-              
 			return null;
 		}
 

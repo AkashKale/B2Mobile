@@ -49,7 +49,8 @@ String URL=Constants.getUrl();
 	{
 		super.onPause();
 	
-	overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
+//	overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
+	
 	}
 
 
@@ -59,7 +60,7 @@ String URL=Constants.getUrl();
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile_page);
 		
-		overridePendingTransition(R.anim.activity_open_translate,R.anim.activity_close_scale);
+	//	overridePendingTransition(R.anim.activity_open_translate,R.anim.activity_close_scale);
 		
 		final TextView tvName=(TextView)findViewById(R.id.name);
       	final ImageView ivDispImg=(ImageView)findViewById(R.id.image);      	 

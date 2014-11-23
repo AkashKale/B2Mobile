@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -41,8 +42,12 @@ public class ActionFragment extends Fragment
 {
 	String URL=Constants.getUrl();	
 	ActionAdapter adapter=null;
-    
+	HashMap<Integer, HashMap<Integer,String>> reccoId = new HashMap<Integer, HashMap<Integer,String>>();
+	HashMap<Integer,String> reccoUrl=new HashMap<Integer,String>();
+		
 	int listItem=0;
+	
+	boolean notWaiting=true;
 	
 	public ActionFragment() 
 	{
@@ -56,21 +61,31 @@ public class ActionFragment extends Fragment
 		
 	    String url=URL+"mobile_getaction";     		    												   
 	    
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("no",listItem);
-		
-	    aq.ajax(url,params,JSONObject.class, new AjaxCallback<JSONObject>() {
-
-	        @Override
-	        public void callback(String url, JSONObject data, AjaxStatus status) 
-	        {	               
 	    
-	        	    getActionData(data,view);
-	        	    listItem+=30;
-	        	
-	        }
-	    });		
+
+	    if(notWaiting)
+	    {
+	    	Map<String, Object> params = new HashMap<String, Object>();
+			params.put("no",listItem);
+			
+		    aq.ajax(url,params,JSONObject.class, new AjaxCallback<JSONObject>() {
+
+		        @Override
+		        public void callback(String url, JSONObject data, AjaxStatus status) 
+		        {	               
+		    
+		          notWaiting=true;
+
+		          getActionData(data,view);
+		        	    listItem+=30;
+		        	
+		        }
+		    });		
+
+	    }
+	    
+			    
+	    notWaiting=false;
 	}
 	
 	public void getActionData(JSONObject data,View view)
@@ -119,10 +134,10 @@ public class ActionFragment extends Fragment
 	  		        		  
   		        		  }
   		        		  else if(tp.equals("BB new chapter"))
-  		        			{
+  		        		  {
   		        			  des.add("Posted a new Chapter in Blogbook");
   		        			type.add("blogbook");
-  		        			}
+  		        		  }
   		        		  else if(tp.equals("C new"))
   		        		  {
   		        			  des.add("Posted a new Collaboration");
@@ -197,10 +212,24 @@ public class ActionFragment extends Fragment
   		        	      title.add(ob.optString("question"));
   		        		  else
   		        		  title.add(ob.optString("title"));		  		    
+  		        		
+  		        		 if(tp.equals("Recco new"))  
+ 		        		  {
+ 		        			JSONObject object=(JSONObject)action.get(i);
+ 		        			
+ 		        			reccoUrl.put(object.optInt("contentid"), ob.optString("url"));
+ 		        			
+ 		        			reccoId.put(object.optInt("user1id"),reccoUrl);
+ 		        			
+ 		        		  }
+ 		        		
   		        		  
-  		        		  
-  		        		  picUrl.add(((String)pic.get(i)).replaceAll("b2.com", Constants.getDomainName()));
+  		        		  picUrl.add((String)pic.get(i));
   		        	  
+  		        		  Log.e("bbarters action", action.get(i).toString()+"\n\n\n");
+  		        		  Log.e("bbarters author",author.get(i).toString()+"\n\n\n");
+  		        		  Log.e("bbarters content",content.get(i).toString()+"\n\n\n");
+  		        		  Log.e("bbarters picurl", pic.get(i).toString()+"\n\n\n");
   		        	  }
         		   }
         		   catch(Exception e)
@@ -260,7 +289,11 @@ public class ActionFragment extends Fragment
 	      	outState.putStringArrayList("times", adapter.getAllTimes());
 	      	outState.putStringArrayList("title", adapter.getAllTitle());
 	      	outState.putStringArrayList("type", adapter.getAllType());
-			}	
+			outState.putSerializable("hashKey1",reccoId );
+			outState.putSerializable("hashKey2",reccoUrl);
+			
+			}
+			
 		}
 	     
 	      	super.onSaveInstanceState(outState);
@@ -271,6 +304,8 @@ public class ActionFragment extends Fragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) 
 	{
+	
+				
 		View view=inflater.inflate(R.layout.fragment_action, container, false);
 	
 final ListView listView=(ListView)view.findViewById(R.id.actionListView);
@@ -297,6 +332,10 @@ final ListView listView=(ListView)view.findViewById(R.id.actionListView);
            type=savedInstanceState.getStringArrayList("type");
            time=savedInstanceState.getStringArrayList("times");
            
+           reccoId=(HashMap<Integer, HashMap<Integer,String>>)savedInstanceState.getSerializable("hashKey1");
+         reccoUrl=(HashMap<Integer,String>)savedInstanceState.getSerializable("hashKey2");
+         
+          
            loading.setAlpha(0);
            
 	        		   adapter=new ActionAdapter(uid,cid,des,name,title,picUrl,type,time,ActionFragment.this.getActivity(),view);
@@ -527,14 +566,29 @@ class ActionAdapter extends BaseAdapter
 			@Override
 			public void onClick(View v) {
 				
-				Constants.showMsg(type.get(position)+contentid.get(position), context);
+			//	Constants.showMsg(type.get(position)+contentid.get(position), context);
 				
-	             Intent intent=new Intent();
-	             intent.setClass(context, PreviewPage.class);
-	             intent.putExtra("type",type.get(position));
-	             intent.putExtra("contentid",contentid.get(position) );
-	             context.startActivity(intent);
-	             
+				if(type.get(position).equals("recco"))
+				{
+					
+					HashMap<Integer,String> rec=(HashMap<Integer, String>) reccoId.get(userid.get(position));
+					String url=rec.get(contentid.get(position));
+					
+					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+					startActivity(browserIntent);
+					
+				}
+				else
+				{
+					  Intent intent=new Intent();
+			             intent.setClass(context, PreviewPage.class);
+			             intent.putExtra("type",type.get(position));
+			             intent.putExtra("contentid",contentid.get(position) );
+			             context.startActivity(intent);
+			             
+				}
+					
+	           
 			}
 		};
 			
