@@ -45,16 +45,23 @@
         
         
         <TextView   
+         android:id="@+id/chapter"
          android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="what the hell asadksfdljsdlkfjsdkj \n asdsdgsjkfskjfhsjkghkjfhg\n" 
+        android:layout_height="wrap_content"
+        android:color="#000000" 
+		android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:text="Chapter"       
          />
         
-        <TextView   
-         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="\n\n\n\n\nwhat the hell asadksfdljsdlkfjsdkj \n asdsdgsjkfskjfhsjkghkjfhg\n" 
-         />
+        
+        <ListView
+            android:id="@+id/chapterList"
+            android:layout_below="@id/chapter"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"  
+        />
+        
     </RelativeLayout>
     
         

@@ -2,6 +2,8 @@ package com.bbarters.bbartersmobile;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -37,16 +40,234 @@ import android.widget.Toast;
 
 public class ActionFragment extends Fragment 
 {
-	String URL=Constants.getUrl();
+	String URL=Constants.getUrl();	
+	ActionAdapter adapter=null;
+	HashMap<Integer, HashMap<Integer,String>> reccoId = new HashMap<Integer, HashMap<Integer,String>>();
+	HashMap<Integer,String> reccoUrl=new HashMap<Integer,String>();
+		
+	int listItem=0;
 	
-	ActionAdapter adapter;
-    
+	boolean notWaiting=true;
+	
 	public ActionFragment() 
 	{
 		
 	}
 
  
+	public void getActionDataAjax(final View view)
+	{
+		AQuery aq=new AQuery(this.getActivity());
+		
+	    String url=URL+"mobile_getaction";     		    												   
+	    
+	    
+
+	    if(notWaiting)
+	    {
+	    	Map<String, Object> params = new HashMap<String, Object>();
+			params.put("no",listItem);
+			
+		    aq.ajax(url,params,JSONObject.class, new AjaxCallback<JSONObject>() {
+
+		        @Override
+		        public void callback(String url, JSONObject data, AjaxStatus status) 
+		        {	               
+		    
+		          notWaiting=true;
+
+		          getActionData(data,view);
+		        	    listItem+=30;
+		        	
+		        }
+		    });		
+
+	    }
+	    
+			    
+	    notWaiting=false;
+	}
+	
+	public void getActionData(JSONObject data,View view)
+	{
+		
+        final ListView listView=(ListView)view.findViewById(R.id.actionListView);
+		
+		final ProgressBar loading=(ProgressBar)view.findViewById(R.id.actionLoading);
+		
+		 if(data.optString("ok").equals("true"))
+    	 {
+    		 
+	        ArrayList<Integer> uid=new ArrayList<Integer>();
+        	ArrayList<Integer> cid=new ArrayList<Integer>();
+        	ArrayList<String> des=new ArrayList<String>();
+        	ArrayList<String> name=new ArrayList<String>();
+        	ArrayList<String> title=new ArrayList<String>();
+        	ArrayList<String> picUrl=new ArrayList<String>();
+        	ArrayList<String> type=new ArrayList<String>();
+        	ArrayList<String> time=new ArrayList<String>();
+        	
+        		 
+        		   try
+        		   { 
+        			  JSONArray action;
+  		        	  JSONArray author;	 
+  		        	  JSONArray content;
+                      JSONArray pic;
+                      
+  		        	  action=data.getJSONArray("action");
+  		        	  author=new JSONArray(data.optString("author"));  		        	 
+  		        	  content=new JSONArray(data.optString("content"));
+  		        	  pic=new JSONArray(data.optString("pic"));
+  		        	  
+  		        	  for(int i=0;i<action.length();i++)
+  		        	  {
+  		        		  JSONObject ob=(JSONObject) action.get(i);
+  		        		  String tp=ob.optString("type");
+  		        	              		  
+  		        		  time.add(ob.optString("created_at"));
+  		        		  
+  		        		  if(tp.equals("BB new"))        			  
+  		        		  {
+  		        			  des.add("Posted a new Blogbook");
+  		        			type.add("blogbook");
+	  		        		  
+  		        		  }
+  		        		  else if(tp.equals("BB new chapter"))
+  		        		  {
+  		        			  des.add("Posted a new Chapter in Blogbook");
+  		        			type.add("blogbook");
+  		        		  }
+  		        		  else if(tp.equals("C new"))
+  		        		  {
+  		        			  des.add("Posted a new Collaboration");
+  		        		  type.add("collaboration");
+  		        		  }
+  		        		  else if(tp.equals("C new chapter"))
+  		        		  {
+  		        			  des.add("Posted a new Chapter in Collaboration");
+  		        		  type.add("collaboration");
+  		        		  }
+  		        		  else if(tp.equals("C req"))
+  		        		  {
+  		        			  des.add("now Collaborating to Collaboration");
+  		        		  type.add("collaboration");
+  		        		  }
+  		        		  else if(tp.equals("M new"))
+  		        		  {
+  		        			  des.add("Uploaded a new Media");
+  		        		  type.add("media");
+  		        		  }
+  		        		  else if(tp.equals("R new"))
+  		        		  {
+  		        			  des.add("Uploaded a new Resource");
+  		        		  type.add("resource");
+  		        		  }
+  		        	     else if(tp.equals("E new"))
+  		        	     {
+  		        	    	 des.add("is Hosting a new Event");
+  		        	     type.add("event");
+  		        	     }
+  		        	      else if(tp.equals("P new"))		
+  		        	      {
+  		        	    	  des.add("Posted a new Poll");
+  		        	          type.add("poll");
+  		        	      }
+  		        	      else if(tp.equals("Q new"))
+  		        	      {
+  		        	    	  des.add("Posted a new Quiz");
+  		        	          type.add("quiz");
+  		        	      }
+  		        	      else if(tp.equals("Diary new"))
+  		        	      {
+  		        	    	  des.add("made a new Post in Diary");
+  		        	    	  type.add("diary");
+  		        	      }
+  		        	      else if(tp.equals("Recco new"))
+  		        	      {
+  		        	    	  des.add("Recommends");
+  		        	    	  type.add("recco");
+  		        	      }
+  		        	      else if(tp.equals("A new"))
+  		        	      {
+  		        	    	  des.add("Posted a new Article");
+  		        	    	  type.add("article");
+  		        	      }
+  		        	      else if(tp.equals("Q score"))
+  		        	      {
+  		        	    	  des.add("Earned "+ob.optInt("user2id")+" by taking the Quiz ");
+  		        	    	  type.add("quiz");
+  		        	      }
+  		    
+  		        		  
+  		        		  uid.add(ob.optInt("user1id"));
+  		        		  cid.add(ob.optInt("contentid"));
+  		        		  
+  		        		  ob=(JSONObject)author.get(i);
+  		        		  name.add(ob.optString("first_name")+" "+ob.optString("last_name"));
+  		        		
+  		        		  ob=(JSONObject)content.get(i);
+  		        		  
+  		        		  if(tp.equals("P new"))
+  		        	      title.add(ob.optString("question"));
+  		        		  else
+  		        		  title.add(ob.optString("title"));		  		    
+  		        		
+  		        		 if(tp.equals("Recco new"))  
+ 		        		  {
+ 		        			JSONObject object=(JSONObject)action.get(i);
+ 		        			
+ 		        			reccoUrl.put(object.optInt("contentid"), ob.optString("url"));
+ 		        			
+ 		        			reccoId.put(object.optInt("user1id"),reccoUrl);
+ 		        			
+ 		        		  }
+ 		        		
+  		        		  
+  		        		  picUrl.add((String)pic.get(i));
+  		        	  
+  		        		  Log.e("bbarters action", action.get(i).toString()+"\n\n\n");
+  		        		  Log.e("bbarters author",author.get(i).toString()+"\n\n\n");
+  		        		  Log.e("bbarters content",content.get(i).toString()+"\n\n\n");
+  		        		  Log.e("bbarters picurl", pic.get(i).toString()+"\n\n\n");
+  		        	  }
+        		   }
+        		   catch(Exception e)
+        		   {
+        			   e.printStackTrace();
+        		   }
+            	 
+        		   
+                   loading.animate().alpha(0).setDuration(300);
+                   
+                   if(adapter==null)
+                   {
+
+                       adapter=new ActionAdapter(uid,cid,des,name,title,picUrl,type,time,ActionFragment.this.getActivity(),view);
+    		        	 
+    		        	
+    		        	 SwingBottomInAnimationAdapter animationAdapter = new SwingBottomInAnimationAdapter(adapter);
+    		        	 animationAdapter.setAbsListView(listView);
+    		        	 listView.setAdapter(animationAdapter);       
+                   }
+                   else
+                   {
+                	   adapter.addData(uid,cid,des,name,title,picUrl,type,time);
+                	   adapter.notifyDataSetChanged();
+                	   
+                   }  
+        	 
+        	 
+    	 }
+    	 else
+    	 {
+    		 Log.e("bbarters", data.optString("ok"));
+    	 }
+
+		 data=null;
+		
+	}
+	
 	public static void showMsg(String string,Context con)
 	{
 		Toast.makeText(con, string,Toast.LENGTH_SHORT).show();
@@ -68,7 +289,11 @@ public class ActionFragment extends Fragment
 	      	outState.putStringArrayList("times", adapter.getAllTimes());
 	      	outState.putStringArrayList("title", adapter.getAllTitle());
 	      	outState.putStringArrayList("type", adapter.getAllType());
-			}	
+			outState.putSerializable("hashKey1",reccoId );
+			outState.putSerializable("hashKey2",reccoUrl);
+			
+			}
+			
 		}
 	     
 	      	super.onSaveInstanceState(outState);
@@ -79,17 +304,14 @@ public class ActionFragment extends Fragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) 
 	{
+	
+				
 		View view=inflater.inflate(R.layout.fragment_action, container, false);
 	
-		
-		final ListView listView=(ListView)view.findViewById(R.id.actionListView);
+final ListView listView=(ListView)view.findViewById(R.id.actionListView);
 		
 		final ProgressBar loading=(ProgressBar)view.findViewById(R.id.actionLoading);
-	
-		AQuery aq=new AQuery(this.getActivity());
-		
-	    String url=URL+"mobile_getaction";     		    												   
-	                                                    
+			                   
 	   if(savedInstanceState!=null)
 	   {
 		   	ArrayList<Integer> uid;
@@ -110,9 +332,13 @@ public class ActionFragment extends Fragment
            type=savedInstanceState.getStringArrayList("type");
            time=savedInstanceState.getStringArrayList("times");
            
+           reccoId=(HashMap<Integer, HashMap<Integer,String>>)savedInstanceState.getSerializable("hashKey1");
+         reccoUrl=(HashMap<Integer,String>)savedInstanceState.getSerializable("hashKey2");
+         
+          
            loading.setAlpha(0);
            
-	        		   adapter=new ActionAdapter(uid,cid,des,name,title,picUrl,type,time,ActionFragment.this.getActivity());
+	        		   adapter=new ActionAdapter(uid,cid,des,name,title,picUrl,type,time,ActionFragment.this.getActivity(),view);
 		        	 
 		        	
 		        	 listView.setAdapter(adapter);
@@ -120,137 +346,8 @@ public class ActionFragment extends Fragment
 	   }
 	   else
 	   {
-		    aq.ajax(url,JSONObject.class, new AjaxCallback<JSONObject>() {
 
-		        @Override
-		        public void callback(String url, JSONObject data, AjaxStatus status) 
-		        {	               
-		    
-		        	
-		        	 if(data.optString("ok").equals("true"))
-		        	 {
-		        		 
-		 	        	ArrayList<Integer> uid=new ArrayList<Integer>();
-			        	ArrayList<Integer> cid=new ArrayList<Integer>();
-			        	ArrayList<String> des=new ArrayList<String>();
-			        	ArrayList<String> name=new ArrayList<String>();
-			        	ArrayList<String> title=new ArrayList<String>();
-			        	ArrayList<String> picUrl=new ArrayList<String>();
-			        	ArrayList<String> type=new ArrayList<String>();
-			        	ArrayList<String> time=new ArrayList<String>();
-			        	
-			        		 
-			        		 
-			        		   try
-			        		   {
-			        			   
-			        			   
-			        			  JSONArray action;
-			  		        	  JSONArray author;	 
-			  		        	  JSONArray content;
-	                              JSONArray pic;
-	                              
-			  		        	  action=data.getJSONArray("action");
-			  		        	  author=new JSONArray(data.optString("author"));  		        	 
-			  		        	  content=new JSONArray(data.optString("content"));
-			  		        	  pic=new JSONArray(data.optString("pic"));
-			  		        	  
-			  		        	  for(int i=0;i<action.length();i++)
-			  		        	  {
-			  		        		  JSONObject ob=(JSONObject) action.get(i);
-			  		        		  String tp=ob.optString("type");
-			  		        	              		  
-			  		        		  time.add(ob.optString("created_at"));
-			  		        		  
-			  		        		  if(tp.equals("BB new"))        			  
-			  		        		  {
-			  		        			  des.add("Posted a new Blogbook");
-			  		        			type.add("blogbook");
-				  		        		  
-			  		        		  }
-			  		        		  else if(tp.equals("BB new chapter"))
-			  		        			{
-			  		        			  des.add("Posted a new Chapter in Blogbook");
-			  		        			type.add("blogbook");
-			  		        			}
-			  		        		  else if(tp.equals("C new"))
-			  		        		  {
-			  		        			  des.add("Posted a new Collaboration");
-			  		        		  type.add("collaboration");
-			  		        		  }
-			  		        		  else if(tp.equals("C new chapter"))
-			  		        		  {
-			  		        			  des.add("Posted a new Chapter in Collaboration");
-			  		        		  type.add("collaboration");
-			  		        		  }
-			  		        		  else if(tp.equals("C req"))
-			  		        		  {
-			  		        			  des.add("now Collaborating to Collaboration");
-			  		        		  type.add("collaboration");
-			  		        		  }
-			  		        		  else if(tp.equals("M new"))
-			  		        		  {
-			  		        			  des.add("Uploaded a new Media");
-			  		        		  type.add("media");
-			  		        		  }
-			  		        		  else if(tp.equals("R new"))
-			  		        		  {
-			  		        			  des.add("Uploaded a new Resource");
-			  		        		  type.add("resource");
-			  		        		  }
-			  		        	     else if(tp.equals("E new"))
-			  		        	     {
-			  		        	    	 des.add("is Hosting a new Event");
-			  		        	     type.add("event");
-			  		        	     }
-			  		        	      else if(tp.equals("P new"))		
-			  		        	      {
-			  		        	    	  des.add("Posted a new Poll");
-			  		        	      type.add("poll");
-			  		        	      }
-			  		        	      else if(tp.equals("Q new"))
-			  		        	      {
-			  		        	    	  des.add("Posted a new Quiz");
-			  		        	      type.add("quiz");
-			  		        	      }
-			  		    
-			  		        		  
-			  		        		  uid.add(ob.optInt("user1id"));
-			  		        		  cid.add(ob.optInt("contentid"));
-			  		        		  
-			  		        		  ob=(JSONObject)author.get(i);
-			  		        		  name.add(ob.optString("first_name")+" "+ob.optString("last_name"));
-			  		        		
-			  		        		  ob=(JSONObject)content.get(i);
-			  		        		  title.add(ob.optString("title"));		  		    
-			  		        		  
-			  		        		  
-			  		        		  picUrl.add(((String)pic.get(i)).replaceAll("\\\\","").replaceAll("b2.com", Constants.getDomainName()));
-			  		        	  }
-			        		   }
-			        		   catch(Exception e)
-			        		   {
-			        			   e.printStackTrace();
-			        		   }
-			            	 
-			        		   
-		                       loading.animate().alpha(0).setDuration(300);
-		                       adapter=new ActionAdapter(uid,cid,des,name,title,picUrl,type,time,ActionFragment.this.getActivity());
-		  		        	 
-		  		        	
-		  		        	 SwingBottomInAnimationAdapter animationAdapter = new SwingBottomInAnimationAdapter(adapter);
-		  		        	 animationAdapter.setAbsListView(listView);
-		  		        	 listView.setAdapter(animationAdapter);         
-			        	 
-			        	 
-		        	 }
-		        	 else
-		        	 {
-		        		 Log.e("bbarters", data.optString("ok"));
-		        	 }
-
-		        }
-		    });			
+			getActionDataAjax(view);	
 
 	   }
 		   
@@ -296,19 +393,6 @@ public class ActionFragment extends Fragment
 
 		
 	
-	
-}
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 
 
 class ActionAdapter extends BaseAdapter
@@ -324,12 +408,12 @@ class ActionAdapter extends BaseAdapter
 	ArrayList<String> type;
 	ArrayList<String> times;
 	
-	View.OnClickListener profileListener;
-	View.OnClickListener previewListener;
+
 	
 	Context context;
 	
 	String StoragePath;
+	View view;
 	
 	public ArrayList<String> getAllTimes()
 	{
@@ -370,7 +454,19 @@ class ActionAdapter extends BaseAdapter
 	}
 	
 	
-	public ActionAdapter(ArrayList<Integer> uid,ArrayList<Integer> cid,ArrayList<String> t,ArrayList<String> f,ArrayList<String> ti,ArrayList<String> pic,ArrayList<String> typ,ArrayList<String> tim,Context con)
+	public void addData(ArrayList<Integer> uid,ArrayList<Integer> cid,ArrayList<String> t,ArrayList<String> f,ArrayList<String> ti,ArrayList<String> pic,ArrayList<String> typ,ArrayList<String> tim)
+	{
+	    userid.addAll(uid);
+	    contentid.addAll(cid);
+	    des.addAll(t);
+	    names.addAll(f);
+	    title.addAll(ti);
+	    picUrl.addAll(pic);
+	    type.addAll(typ);
+	    times.addAll(tim);
+	}
+	
+	public ActionAdapter(ArrayList<Integer> uid,ArrayList<Integer> cid,ArrayList<String> t,ArrayList<String> f,ArrayList<String> ti,ArrayList<String> pic,ArrayList<String> typ,ArrayList<String> tim,Context con,View v)
 	 {
 		 userid=uid;
 		 contentid=cid;
@@ -384,6 +480,7 @@ class ActionAdapter extends BaseAdapter
 		 
 		 context=con;
 			
+		view=v;
 		
 		StoragePath=Constants.getStoragePathUser(con);	
 		
@@ -409,7 +506,7 @@ class ActionAdapter extends BaseAdapter
 	}
 
 	
-	private static class ViewHolder 
+	private  class ViewHolder 
 	{
 
 		  public TextView name;		   
@@ -451,7 +548,7 @@ class ActionAdapter extends BaseAdapter
 		TextView name;
 		TextView time;
 	
-		 profileListener=new View.OnClickListener() {
+		View.OnClickListener profileListener=new View.OnClickListener() {
 				
 			@Override
 			public void onClick(View v) {
@@ -464,18 +561,34 @@ class ActionAdapter extends BaseAdapter
 		};
 		
 		
-		previewListener=new View.OnClickListener() {
+		View.OnClickListener previewListener=new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				
-
-	             Intent intent=new Intent();
-	             intent.setClass(context, PreviewPage.class);
-	             intent.putExtra("type",type.get(position));
-	             intent.putExtra("contentid",contentid.get(position) );
-	             context.startActivity(intent);
-	             
+			//	Constants.showMsg(type.get(position)+contentid.get(position), context);
+				
+				if(type.get(position).equals("recco"))
+				{
+					
+					HashMap<Integer,String> rec=(HashMap<Integer, String>) reccoId.get(userid.get(position));
+					String url=rec.get(contentid.get(position));
+					
+					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+					startActivity(browserIntent);
+					
+				}
+				else
+				{
+					  Intent intent=new Intent();
+			             intent.setClass(context, PreviewPage.class);
+			             intent.putExtra("type",type.get(position));
+			             intent.putExtra("contentid",contentid.get(position) );
+			             context.startActivity(intent);
+			             
+				}
+					
+	           
 			}
 		};
 			
@@ -488,11 +601,7 @@ class ActionAdapter extends BaseAdapter
 			 name=(TextView)arg1.findViewById(R.id.name);
 			 time=(TextView)arg1.findViewById(R.id.time);
 	
-			 image.setOnClickListener(profileListener);
-             name.setOnClickListener(profileListener);
-             
-             content.setOnClickListener(previewListener);
-             
+			 
 			 arg1.setTag(new ViewHolder(name,content,time,image));		
 			
 		}
@@ -505,7 +614,10 @@ class ActionAdapter extends BaseAdapter
 			time=vh.time;
 		}
 		
-
+		image.setOnClickListener(profileListener);
+        name.setOnClickListener(profileListener); 
+        
+		content.setOnClickListener(previewListener);
 		
 		name.setText(names.get(position));
 		time.setText(times.get(position));
@@ -526,6 +638,13 @@ class ActionAdapter extends BaseAdapter
 			storage.execute();
 		}
 		
+		
+		if(position==names.size()-1)
+		{
+			
+			Constants.showMsg("last list",context);
+			getActionDataAjax(view);
+		}
 		
 		return arg1;
 
@@ -564,10 +683,19 @@ url=u;
 
 	
 	@Override
-	protected void onPostExecute(String result) {
+	protected void onPostExecute(String result) 
+	{
 		
 		super.onPostExecute(result);
 	}
 	
 	
 }
+	
+	
+	
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

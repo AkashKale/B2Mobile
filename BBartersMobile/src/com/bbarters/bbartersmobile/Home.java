@@ -36,6 +36,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -155,6 +157,31 @@ public class Home extends FragmentActivity
 
     // just styling option add shadow the right edge of the drawer
 
+    
+    drawerList.setOnItemClickListener(new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+	
+			      if(position==1)
+			      {
+			    	  
+			      }
+			      else if(position==2)
+			      {
+			    	  
+			      }
+			      else if(position==3)
+			      {
+			    	  
+			      }
+			      else if(position==4)
+			      {
+			    	  
+			      }
+		}
+	});
 
 }
 
@@ -321,12 +348,5 @@ class Adapter extends FragmentStatePagerAdapter
 	
 	
 	
-	
-	
-	
-
-	 
-	 
-	 
-	 
+ 
 }
