@@ -203,11 +203,15 @@ aq=null;
 								
 								if(content.optString("ok").equals("free"))
 								{
-									Intent intent=new Intent();
-									intent.setClass(getApplicationContext(), ABCReading.class);
-									intent.putExtra("contentId",contentid );
-									intent.putExtra("type", type);
-									startActivity(intent);
+									if(type.equals("blogbook")||type.equals("collaboration")||type.equals("article"))
+									{
+										Intent intent=new Intent();
+										intent.setClass(getApplicationContext(), ABCReading.class);
+										intent.putExtra("contentId",contentid );
+										intent.putExtra("type", type);
+										startActivity(intent);
+										
+									}
 									
 								}
 								else if(content.optString("ok").equals("true"))
@@ -253,12 +257,16 @@ aq=null;
 															
 															if(content.equals("true"))
 															{
-																Intent intent=new Intent();
-																intent.setClass(getApplicationContext(), ABCReading.class);
-																intent.putExtra("contentId",contentid );
-																intent.putExtra("type", type);
-																startActivity(intent);
-																
+																if(type.equals("blogbook")||type.equals("collaboration")||type.equals("article"))
+																{
+
+																	Intent intent=new Intent();
+																	intent.setClass(getApplicationContext(), ABCReading.class);
+																	intent.putExtra("contentId",contentid );
+																	intent.putExtra("type", type);
+																	startActivity(intent);
+																	
+																}
 															}
 															else
 															{

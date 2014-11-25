@@ -28,6 +28,7 @@ public class ABCReading extends Activity {
 String URL=Constants.getUrl();
 String type;
 int contentId;
+WebView webView;
 
 	public void initChapterList()
 	{
@@ -52,7 +53,7 @@ int contentId;
 						Log.e("preview", content.toString());
 					
 						ArrayList<String> chapterName=new ArrayList<String>();						
-						ArrayList<Integer> chapterId=new ArrayList<Integer>();
+						final ArrayList<Integer> chapterId=new ArrayList<Integer>();
 						
 						
 						
@@ -65,10 +66,14 @@ int contentId;
 							public void onItemClick(AdapterView<?> parent, View view,
 									int position, long id) 
 							{
-							
-						 	
+								if(type.equals("blogbook"))
+								webView.loadUrl("http://www.bbarters.com/mobile_readBlogbook/"+contentId+"/"+chapterId.get(position));												 	
+								else if(type.equals("blogbook"))
+									webView.loadUrl("http://www.bbarters.com/mobile_readCollaboration/"+contentId+"/"+chapterId.get(position));												 	
+								
 							}
 						});
+					
 					}
 				});
 	}
@@ -80,19 +85,20 @@ int contentId;
 		setContentView(R.layout.activity_abcreading);
 		
 		DrawerLayout dlayout=(DrawerLayout)findViewById(R.id.drawer_layout);
-		WebView webView=(WebView)findViewById(R.id.webView);
+		webView=(WebView)findViewById(R.id.webView);
 
 		type=getIntent().getExtras().getString("type");
 		contentId=getIntent().getExtras().getInt("contentId");
 		
-		
-		
+		if(!type.equals("article"))
+        initChapterList();		
 		
 		
 		WebSettings webSettings = webView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 		
-		webView.loadUrl("http://www.bbarters.com");
+		if(type.equals("article"))
+		webView.loadUrl("http://www.bbarters.com/mobile_readArticle/"+contentId);
 		
 	}
 

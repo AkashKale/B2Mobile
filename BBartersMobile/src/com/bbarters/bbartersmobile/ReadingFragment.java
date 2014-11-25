@@ -10,21 +10,17 @@ import org.json.JSONObject;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
-import com.origamilabs.library.views.StaggeredGridView;
+import com.etsy.android.grid.StaggeredGridView;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -88,7 +84,7 @@ public class ReadingFragment extends Fragment {
 		  		        		category.add(categoryArray[i]);
 		  		        		JSONObject ob=(JSONObject)byArray.get(i);
 		  		        		by.add(ob.optString("first_name")+ob.optString("last_name"));
-		  		        		picUrl.add((String)picArray.get(i));
+		  		        		picUrl.add(URL+((String)picArray.get(i)));
 		        	        }
 		        	        
 		        	        CustomGrid adapter = new CustomGrid(ReadingFragment.this.getActivity(), picUrl,reads,title,category,by);
@@ -108,10 +104,12 @@ public class ReadingFragment extends Fragment {
 	    
 	    gridView.setOnItemClickListener(new StaggeredGridView.OnItemClickListener() {
 	             
-					@Override
-					public void onItemClick(StaggeredGridView parent,
-							View view, int position, long id) {
 					
+
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						// TODO Auto-generated method stub
 						
 					}
 	            });

@@ -42,8 +42,8 @@ public class ActionFragment extends Fragment
 {
 	String URL=Constants.getUrl();	
 	ActionAdapter adapter=null;
-	HashMap<Integer, HashMap<Integer,String>> reccoId = new HashMap<Integer, HashMap<Integer,String>>();
-	HashMap<Integer,String> reccoUrl=new HashMap<Integer,String>();
+	HashMap<Integer, HashMap<Integer,String>> reccoId ;
+	HashMap<Integer,String> reccoUrl;
 		
 	int listItem=0;
 	
@@ -226,10 +226,6 @@ public class ActionFragment extends Fragment
   		        		  
   		        		  picUrl.add((String)pic.get(i));
   		        	  
-  		        		  Log.e("bbarters action", action.get(i).toString()+"\n\n\n");
-  		        		  Log.e("bbarters author",author.get(i).toString()+"\n\n\n");
-  		        		  Log.e("bbarters content",content.get(i).toString()+"\n\n\n");
-  		        		  Log.e("bbarters picurl", pic.get(i).toString()+"\n\n\n");
   		        	  }
         		   }
         		   catch(Exception e)
@@ -291,6 +287,8 @@ public class ActionFragment extends Fragment
 	      	outState.putStringArrayList("type", adapter.getAllType());
 			outState.putSerializable("hashKey1",reccoId );
 			outState.putSerializable("hashKey2",reccoUrl);
+			outState.putInt("listItem",listItem);
+			
 			
 			}
 			
@@ -333,7 +331,9 @@ final ListView listView=(ListView)view.findViewById(R.id.actionListView);
            time=savedInstanceState.getStringArrayList("times");
            
            reccoId=(HashMap<Integer, HashMap<Integer,String>>)savedInstanceState.getSerializable("hashKey1");
-         reccoUrl=(HashMap<Integer,String>)savedInstanceState.getSerializable("hashKey2");
+           reccoUrl=(HashMap<Integer,String>)savedInstanceState.getSerializable("hashKey2");
+         
+         listItem=savedInstanceState.getInt("listItem");
          
           
            loading.setAlpha(0);
@@ -347,6 +347,9 @@ final ListView listView=(ListView)view.findViewById(R.id.actionListView);
 	   else
 	   {
 
+		   reccoUrl=new HashMap<Integer,String>();
+		   reccoId = new HashMap<Integer, HashMap<Integer,String>>();
+				   
 			getActionDataAjax(view);	
 
 	   }
@@ -684,8 +687,7 @@ url=u;
 	
 	@Override
 	protected void onPostExecute(String result) 
-	{
-		
+	{		
 		super.onPostExecute(result);
 	}
 	
