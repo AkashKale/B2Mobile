@@ -183,7 +183,7 @@ aq=null;
 				params.put("contentid", contentid);
 				params.put("type",type);
 				
-				Log.e("bbarters pereviewpage sending","authid:"+authid+" contentid:"+contentid+" type:"+type);
+				
 				aq.ajax(url, params, JSONObject.class,
 						new AjaxCallback<JSONObject>() 
 						{
@@ -210,6 +210,10 @@ aq=null;
 										intent.putExtra("contentId",contentid );
 										intent.putExtra("type", type);
 										startActivity(intent);
+										
+									}
+									else if(type.equals("media"))
+									{
 										
 									}
 									
@@ -253,9 +257,8 @@ aq=null;
 															
 															Log.e("purchase",content);
 										
-															dialog.dismiss();
 															
-															if(content.equals("true"))
+															if(content.equals("success"))
 															{
 																if(type.equals("blogbook")||type.equals("collaboration")||type.equals("article"))
 																{
@@ -267,11 +270,18 @@ aq=null;
 																	startActivity(intent);
 																	
 																}
+																else if(type.equals("media"))
+																{
+																	
+																}
 															}
 															else
 															{
 															Constants.showMsg(content, getApplicationContext());	
 															}
+															
+															dialog.dismiss();
+															
 
 														}
 													});

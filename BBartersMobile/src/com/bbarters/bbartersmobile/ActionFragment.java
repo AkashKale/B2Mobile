@@ -151,7 +151,7 @@ public class ActionFragment extends Fragment
   		        		  else if(tp.equals("C req"))
   		        		  {
   		        			  des.add("now Collaborating to Collaboration");
-  		        		  type.add("collaboration");
+  		        		     type.add("collaboration");
   		        		  }
   		        		  else if(tp.equals("M new"))
   		        		  {
@@ -161,7 +161,7 @@ public class ActionFragment extends Fragment
   		        		  else if(tp.equals("R new"))
   		        		  {
   		        			  des.add("Uploaded a new Resource");
-  		        		  type.add("resource");
+  		        		      type.add("resource");
   		        		  }
   		        	     else if(tp.equals("E new"))
   		        	     {
@@ -576,14 +576,40 @@ class ActionAdapter extends BaseAdapter
 					
 					HashMap<Integer,String> rec=(HashMap<Integer, String>) reccoId.get(userid.get(position));
 					String url=rec.get(contentid.get(position));
+				
 					
-					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-					startActivity(browserIntent);
-					
+					if(url.toLowerCase().contains("bbarters.com"))
+					{
+						 Intent intent=new Intent();
+			             intent.setClass(context, PreviewPage.class);
+			             intent.putExtra("type",Constants.getType(url));
+			     	
+			             String integer="";
+			            String string=url;
+			    		for(int i=string.length()-1;i>0;i--)
+			    		{
+			    			if(string.charAt(i)=='/')
+			    			{
+			    		      integer=string.substring(i+1,string.length());	
+			    		      break;
+			    			}
+			    		}
+
+			             intent.putExtra("contentid",Integer.parseInt(integer) );
+			             
+			             context.startActivity(intent);
+			            
+					}
+					else
+					{
+						Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+						startActivity(browserIntent);
+					}
 				}
 				else
 				{
-					  Intent intent=new Intent();
+					 
+					     Intent intent=new Intent();
 			             intent.setClass(context, PreviewPage.class);
 			             intent.putExtra("type",type.get(position));
 			             intent.putExtra("contentid",contentid.get(position) );

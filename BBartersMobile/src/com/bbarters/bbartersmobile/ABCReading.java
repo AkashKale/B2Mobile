@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
-import com.bbarters.bbartersmobile.PreviewPage.LoadActionbar;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -23,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 
 public class ABCReading extends Activity {
 String URL=Constants.getUrl();
@@ -50,14 +51,45 @@ WebView webView;
 					public void callback(String url,final JSONObject content, AjaxStatus status) 
 					{
 						
-						Log.e("preview", content.toString());
+						Log.e("abc Reading", content.toString());
 					
 						ArrayList<String> chapterName=new ArrayList<String>();						
 						final ArrayList<Integer> chapterId=new ArrayList<Integer>();
 						
+			             try 
+			             {
+			            	 
+			            	 if(type.equals("collaboration"))
+			            	 {
+			            		 String[] cid = content.optString("chapterid").replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+			            		 JSONArray cName=new JSONArray(content.optString("chaptername"));
+										
+			            		 for(int i=0;i<cName.length();i++)    
+						           {
+						        	   chapterName.add(cName.getString(i));
+						        	   chapterId.add(Integer.parseInt(cid[i]));
+						           }	 
+			            	 }
+			            	 else
+			            	 {
+
+				            	 JSONArray cName=content.getJSONArray("chaptername");
+									JSONArray cid=content.getJSONArray("chapterid");
+						           for(int i=0;i<cName.length();i++)    
+						           {
+						        	   chapterName.add(cName.getString(i));
+						        	   chapterId.add(cid.getInt(i));
+						           } 
+			            	 }
+							
+				          } 
+				         catch (Exception e)
+				             {
+								e.printStackTrace();
+							 }
+			             
 						
-						
-						ArrayAdapter<String> adapter=new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1);
+						ArrayAdapter<String> adapter=new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,chapterName);
 						chapterList.setAdapter(adapter);
 						
 						chapterList.setOnItemClickListener(new OnItemClickListener() 
@@ -68,9 +100,8 @@ WebView webView;
 							{
 								if(type.equals("blogbook"))
 								webView.loadUrl("http://www.bbarters.com/mobile_readBlogbook/"+contentId+"/"+chapterId.get(position));												 	
-								else if(type.equals("blogbook"))
-									webView.loadUrl("http://www.bbarters.com/mobile_readCollaboration/"+contentId+"/"+chapterId.get(position));												 	
-								
+								else if(type.equals("collaboration"))
+							    webView.loadUrl("http://www.bbarters.com/mobile_readCollaboration/"+contentId+"/"+chapterId.get(position));												 									
 							}
 						});
 					

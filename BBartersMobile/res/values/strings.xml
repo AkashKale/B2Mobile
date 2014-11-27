@@ -8,7 +8,8 @@
     <string name="facebook_app_id">705636022856156</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_preview_page">PreviewPage</string>
-	<string-array name="items">
+
+    <string-array name="items">
         <item>My Uploads</item>
         <item>Media</item>
         <item>Resources</item>
@@ -16,6 +17,8 @@
         <item>Quizes</item>
         <item>Events</item>
     </string-array>
-    
-	  <string name="title_activity_abcreading">ABCReading</string> 
+
+    <string name="title_activity_abcreading">ABCReading</string>
+    <string name="title_activity_playing_media">PlayingMedia</string>
+
 </resources>

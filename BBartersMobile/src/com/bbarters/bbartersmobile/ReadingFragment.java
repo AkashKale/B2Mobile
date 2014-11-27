@@ -13,6 +13,7 @@ import com.androidquery.callback.AjaxStatus;
 import com.etsy.android.grid.StaggeredGridView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,14 +23,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-/**
- * A simple {@link Fragment} subclass.
- * 
- */
-public class ReadingFragment extends Fragment {
+public class ReadingFragment extends Fragment 
+{
 	String URL=Constants.getUrl();
+	ArrayList<Integer> contentId;
+    ArrayList<String> picUrl;
+    
 	public ReadingFragment() 
 	{
+	
 	}
 
 	@Override
@@ -42,52 +44,48 @@ public class ReadingFragment extends Fragment {
 	    	String url=URL+"mobile_myreadings";
 	    	Map<String, Object> params = new HashMap<String, Object>();
 	    	SharedPreferences auth = this.getActivity().getSharedPreferences("Auth", Context.MODE_PRIVATE);
-	    	//auth.getInt("id", 0)
-		    params.put("id",17);       		   		    	
+		    params.put("id",auth.getInt("id",0));       		   		    	
+		    
 	       	aq.ajax(url,params,JSONObject.class, new AjaxCallback<JSONObject>() 
       		{
 	    		public void callback(String url, JSONObject data, AjaxStatus status) 
 	    		{
 	    			if(data.optString("ok").equals("true"))
 	    			{
-	    				Log.e("bbarters", data.optString("title").toString());
+	    				
 	    				try
 	        		   	{
 	    					//gjkhgj
-	    					ArrayList<Integer> uid=new ArrayList<Integer>();
+	    					contentId=new ArrayList<Integer>();    					
 	    					ArrayList<Integer> reads=new ArrayList<Integer>();
-	    					ArrayList<Integer> category=new ArrayList<Integer>();
 	    					ArrayList<String> title=new ArrayList<String>();
-	    					ArrayList<String> picUrl=new ArrayList<String>();
+	    			        picUrl=new ArrayList<String>();
 	    					ArrayList<String> by=new ArrayList<String>();
+	    					
 	    					JSONArray titleArray;
 	    					JSONArray byArray;
 	    					JSONArray picArray;
+	    					
 	    					String[] itemsReads = data.optString("reads").replaceAll("\\[", "").replaceAll("\\]", "").split(",");
-	    					String[] itemsCat = data.optString("category").replaceAll("\\[", "").replaceAll("\\]", "").split(",");
-	    					int[] readsArray = new int[itemsReads.length];
-	    					int[] categoryArray = new int[itemsCat.length];
 
-	    					for (int i = 0; i < itemsReads.length; i++) {
-	    					    try {
-	    					        readsArray[i] = Integer.parseInt(itemsReads[i]);
-	    					        categoryArray[i]=Integer.parseInt(itemsCat[i]);
-	    					    } catch (NumberFormatException nfe) {};
-	    					}
+	    					String[] cId = data.optString("contentid").replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+
+	    					
 	    					titleArray=new JSONArray(data.optString("title"));  		        	 
 	    					byArray=new JSONArray(data.optString("by"));	    					
 	    					picArray=new JSONArray(data.optString("pic"));
-		        	        for(int i=0;i<titleArray.length();i++)
+		        	        
+	    					for(int i=0;i<titleArray.length();i++)
 		        	        {
-		  		        		reads.add(readsArray[i]);
+		  		        		reads.add(Integer.parseInt(itemsReads[i]));
 		  		        		title.add(titleArray.get(i).toString());
-		  		        		category.add(categoryArray[i]);
 		  		        		JSONObject ob=(JSONObject)byArray.get(i);
 		  		        		by.add(ob.optString("first_name")+ob.optString("last_name"));
 		  		        		picUrl.add(URL+((String)picArray.get(i)));
+		        	            contentId.add(Integer.parseInt(cId[i]));
 		        	        }
 		        	        
-		        	        CustomGrid adapter = new CustomGrid(ReadingFragment.this.getActivity(), picUrl,reads,title,category,by);
+		        	        CustomGrid adapter = new CustomGrid(ReadingFragment.this.getActivity(), picUrl,reads,title,by);
 		        		    gridView.setAdapter(adapter);
 	        		   	}
 	    				catch(Exception e)
@@ -109,8 +107,14 @@ public class ReadingFragment extends Fragment {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
-						// TODO Auto-generated method stub
-						
+				
+						Log.e("bbarters reading fragment onclick", picUrl.get(position) +"   "+contentId.get(position));
+						Intent intent=new Intent();
+						intent.setClass(getActivity(), ABCReading.class);
+						intent.putExtra("type",Constants.getType(picUrl.get(position)));
+						intent.putExtra("contentId",contentId.get(position));
+						startActivity(intent);
+					
 					}
 	            });
 		return view;

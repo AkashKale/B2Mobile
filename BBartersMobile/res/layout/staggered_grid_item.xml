@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/RelativeLayout1"
     android:layout_width="150dp"
-    android:layout_height="200dp" >
+    android:layout_height="wrap_content" >
 
     <ImageView
         android:id="@+id/grid_pic"
@@ -14,10 +14,9 @@
     <TextView
         android:id="@+id/grid_reads"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
+        android:layout_height="wrap_content"     
+        android:layout_below="@id/grid_pic"
         android:gravity="center"
-        android:layout_alignParentBottom="true"  
         />
     
 
@@ -25,22 +24,10 @@
         android:id="@+id/grid_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:layout_marginTop="15dp"
+        
         android:gravity="center"
-        android:layout_above="@id/grid_reads"
-        />
-    
-
-    <TextView
-        android:id="@+id/grid_category"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:singleLine="true"
-        android:gravity="center"
-        android:layout_above="@id/grid_title"
-        />
+        android:layout_below="@id/grid_reads"
+        />  
     
 
     <TextView
@@ -48,9 +35,7 @@
         android:layout_width="fill_parent"
         android:gravity="center"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:singleLine="true"
-        android:layout_above="@id/grid_category"
+        android:layout_below="@id/grid_title"
         />
 
 </RelativeLayout>
