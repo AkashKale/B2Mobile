@@ -1,0 +1,85 @@
+commit
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# Changes to be committed:
+#	deleted:    BBartersMobile/bin/BBartersMobile.apk
+#	modified:   BBartersMobile/bin/R.txt
+#	deleted:    BBartersMobile/bin/classes.dex
+#	modified:   BBartersMobile/bin/classes/android/support/v7/appcompat/R$attr.class
+#	modified:   BBartersMobile/bin/classes/android/support/v7/appcompat/R$color.class
+#	modified:   BBartersMobile/bin/classes/android/support/v7/appcompat/R$dimen.class
+#	modified:   BBartersMobile/bin/classes/android/support/v7/appcompat/R$id.class
+#	modified:   BBartersMobile/bin/classes/android/support/v7/appcompat/R$integer.class
+#	modified:   BBartersMobile/bin/classes/android/support/v7/appcompat/R$string.class
+#	modified:   BBartersMobile/bin/classes/android/support/v7/appcompat/R$style.class
+#	modified:   BBartersMobile/bin/classes/android/support/v7/appcompat/R$styleable.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/ActionFragment.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/Home.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/IFCManager$1.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/IFCManager.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/Login$2$1.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/Login$2.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/Login.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/NotificationAdapter.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/NotificationFragment$2.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/NotificationFragment.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/PreviewPage.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/ProfilePage$1.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/ProfilePage.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$attr.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$color.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$dimen.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$drawable.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$id.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$integer.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$layout.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$menu.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$raw.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$string.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$style.class
+#	modified:   BBartersMobile/bin/classes/com/bbarters/bbartersmobile/R$styleable.class
+#	modified:   BBartersMobile/bin/classes/com/facebook/android/R$attr.class
+#	modified:   BBartersMobile/bin/classes/com/facebook/android/R$color.class
+#	modified:   BBartersMobile/bin/classes/com/facebook/android/R$dimen.class
+#	modified:   BBartersMobile/bin/classes/com/facebook/android/R$drawable.class
+#	modified:   BBartersMobile/bin/classes/com/facebook/android/R$id.class
+#	modified:   BBartersMobile/bin/classes/com/facebook/android/R$string.class
+#	modified:   BBartersMobile/bin/classes/com/facebook/android/R$style.class
+#	modified:   BBartersMobile/bin/classes/com/facebook/android/R$styleable.class
+#	modified:   BBartersMobile/bin/classes/com/origamilabs/library/R$attr.class
+#	modified:   BBartersMobile/bin/classes/com/origamilabs/library/R$styleable.class
+#	deleted:    BBartersMobile/bin/dexedLibs/android-query-full.0.26.7-70c978b6c18c3f872d9a94e179b98907.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/android-support-v4-a251b1b879fec5bf30a915eacef5004f.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/android-support-v7-appcompat-212db11f786edcf081976bd263aa59e8.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/annotations-23306d58b89c9a8e6e1479880a70ed77.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/appcompat_v7-751106146e9ca47edc6b2401cd68f42d.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/bolts-android-1.1.2-d33847bf99aff5698a9a7a48176a5967.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/facebooksdk-d93f34e10ac6cc178dc19ffab9d8533c.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/google-play-services-c916c532d0f2a8ab386f09d6a98b03e0.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/google-play-services_lib-6b20f1e3fd03ee94061b80e1136ef543.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/listviewanimations_lib-core-slh_3.1.0-4f8066aa81ce8a518144bc19046bca5a.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/listviewanimations_lib-core_3.1.0-82287e9aa8c292baba30714fbff7f6ea.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/listviewanimations_lib-manipulation_3.1.0-9840c3e3b2dff88711656cd7b1b88890.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/nineoldandroids-2.4.0-9b7a5f578e2881c632b403acab0ad8e1.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/picasso-2.4.0-9fb5fcb437dcdb4360f87a04b5c0598c.jar
+#	deleted:    BBartersMobile/bin/dexedLibs/staggeredgridview-master-71aa5b2c87873bedb5479726dac34f52.jar
+#	deleted:    BBartersMobile/bin/res/crunch/drawable-hdpi/ic_launcher.png
+#	deleted:    BBartersMobile/bin/res/crunch/drawable-mdpi/ic_launcher.png
+#	deleted:    BBartersMobile/bin/res/crunch/drawable-xhdpi/ic_launcher.png
+#	deleted:    BBartersMobile/bin/res/crunch/drawable-xxhdpi/ic_launcher.png
+#	deleted:    BBartersMobile/bin/res/crunch/raw/mainback.png
+#	deleted:    BBartersMobile/bin/res/crunch/raw/profile.png
+#	deleted:    BBartersMobile/bin/res/crunch/raw/profile_background.png
+#	deleted:    BBartersMobile/bin/resources.ap_
+#	renamed:    BBartersMobile/gen/com/origamilabs/library/R.java -> BBartersMobile/gen/android/support/v7/appcompat/R.java
+#	modified:   BBartersMobile/gen/com/bbarters/bbartersmobile/R.java
+#	modified:   BBartersMobile/gen/com/facebook/android/R.java
+#	modified:   BBartersMobile/gen/com/origamilabs/library/R.java
+#	modified:   BBartersMobile/project.properties
+#	modified:   FacebookSDK/bin/facebooksdk.jar
+#	modified:   appcompat_v7/bin/android-support-v7-appcompat.jar
+#	modified:   google-play-services_lib/bin/google-play-services_lib.jar
+#
