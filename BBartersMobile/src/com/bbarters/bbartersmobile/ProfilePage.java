@@ -120,6 +120,7 @@ String URL=Constants.getUrl();
             
 	    }
       });
+	    
 		//dispImg.setImageBitmap(getRoundedShape(BitmapDrawable.));
 
 	}
@@ -148,9 +149,11 @@ String URL=Constants.getUrl();
          public Display(String ur,ImageView i,ImageView cp,String cpstring,int id)   
          {
         	 
-        	 coverPicString=cpstring.replaceAll("\\\\", "");
+        	 coverPicString=cpstring;
+        	 url=ur;
+        	// coverPicString=cpstring.replaceAll("\\\\", "");
         	 coverPic=cp;
-        	 url=ur.replaceAll("\\\\","");
+        	 //url=ur.replaceAll("\\\\","");
         	 iv=i;
         	 userid=id;
          }
@@ -165,7 +168,7 @@ String URL=Constants.getUrl();
 			if(userFile.exists())
 			{
 				image=BitmapFactory.decodeFile(userFile.getPath());
-				image=Constants.getResizedBitmap(image,230,200);
+			//image=Constants.getResizedBitmap(image,230,200);
 				image=Constants.getRoundedShape(image);
 				image=Constants.imageGlow(image);  
 			}
@@ -173,7 +176,7 @@ String URL=Constants.getUrl();
 			{
 				image=Constants.getBitmapFromURL(url);
 				Constants.writeBmpToFile(userFile,image);
-				image=Constants.getResizedBitmap(image,230,200);
+			//	image=Constants.getResizedBitmap(image,230,200);
 				image=Constants.getRoundedShape(image);
 				image=Constants.imageGlow(image);  
 				
@@ -183,6 +186,8 @@ String URL=Constants.getUrl();
 			if(coverFile.exists())
 			{
 				coverImage=BitmapFactory.decodeFile(coverFile.getPath());
+				//coverImage=Constants.cropBitmap(coverImage);
+				
 			}
 			else
 			{	
@@ -200,10 +205,14 @@ String URL=Constants.getUrl();
 		protected void onPostExecute(String result) 
 		{
 			
-		   iv.setBackgroundDrawable(new BitmapDrawable(getResources(),image));	
+		   /*iv.setBackgroundDrawable(new BitmapDrawable(getResources(),image));	
+		   
 		   coverPic.setBackgroundDrawable(new BitmapDrawable(getResources(),coverImage));
+		   */
 		   
-		   
+			iv.setImageBitmap(image);
+			coverPic.setImageBitmap(coverImage);
+			
 		   super.onPostExecute(result);
 		}
 		

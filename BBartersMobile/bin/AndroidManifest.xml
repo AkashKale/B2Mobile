@@ -45,12 +45,26 @@
             android:name=".PreviewPage"
             android:label="@string/title_activity_preview_page" >
         </activity>
-        
-        <activity android:name=".ABCReading" 
-            android:label="@string/title_activity_abcreading" /> 
-            
-          <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
-        
+        <activity
+            android:name=".ABCReading"
+            android:label="@string/title_activity_abcreading" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".PlayingMedia"
+            android:label="@string/title_activity_playing_media" >
+        </activity>
+        <activity
+            android:name=".QuizActivity"
+            android:label="@string/title_activity_quiz" >
+        </activity>
+        <activity
+            android:name=".ViewQuizes"
+            android:label="@string/title_activity_view_quizes" >
+        </activity>
     </application>
 
 </manifest>

@@ -180,6 +180,14 @@ public class Home extends FragmentActivity
 			      {
 			    	  
 			      }
+			      else if(position==5)
+			      {
+			    	  
+			      }
+			      else if(position==6)
+			      {
+			    	  
+			      }
 		}
 	});
 

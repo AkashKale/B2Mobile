@@ -41,6 +41,7 @@ public class PreviewPage extends Activity {
 	 int authid;
 	String type;
 	int authorid;
+	int quiztime;
 	
 	@Override
 	protected void onDestroy() 
@@ -123,6 +124,8 @@ aq=null;
 				           
 							AQuery a=new AQuery(PreviewPage.this.getApplicationContext());
 							a.id(contentImage).image(contentPic);
+							
+						    quiztime=content.optInt("time");
 						    
 						     profileName.setText(content.optString("author_name"));
 						     title.setText(content.optString("title"));
@@ -183,7 +186,7 @@ aq=null;
 				params.put("contentid", contentid);
 				params.put("type",type);
 				
-				Log.e("bbarters pereviewpage sending","authid:"+authid+" contentid:"+contentid+" type:"+type);
+				
 				aq.ajax(url, params, JSONObject.class,
 						new AjaxCallback<JSONObject>() 
 						{
@@ -203,12 +206,19 @@ aq=null;
 								
 								if(content.optString("ok").equals("free"))
 								{
-									Intent intent=new Intent();
-									intent.setClass(getApplicationContext(), ABCReading.class);
-									intent.putExtra("contentId",contentid );
-									intent.putExtra("type", type);
-									startActivity(intent);
-									
+									if(type.equals("blogbook")||type.equals("collaboration")||type.equals("article"))
+									{
+										Intent intent=new Intent();
+										intent.setClass(getApplicationContext(), ABCReading.class);
+										intent.putExtra("contentId",contentid );
+										intent.putExtra("type", type);
+										startActivity(intent);
+										
+									}
+									else if(type.equals("media"))
+									{
+										
+									}
 								}
 								else if(content.optString("ok").equals("true"))
 								{
@@ -249,21 +259,39 @@ aq=null;
 															
 															Log.e("purchase",content);
 										
-															dialog.dismiss();
 															
-															if(content.equals("true"))
+															if(content.equals("success"))
 															{
-																Intent intent=new Intent();
-																intent.setClass(getApplicationContext(), ABCReading.class);
-																intent.putExtra("contentId",contentid );
-																intent.putExtra("type", type);
-																startActivity(intent);
-																
+																if(type.equals("blogbook")||type.equals("collaboration")||type.equals("article"))
+																{
+
+																	Intent intent=new Intent();
+																	intent.setClass(getApplicationContext(), ABCReading.class);
+																	intent.putExtra("contentId",contentid );
+																	intent.putExtra("type", type);
+																	startActivity(intent);
+																	
+																}
+																else if(type.equals("media"))
+																{
+																	
+																}
+																else if(type.equals("quiz"))
+																{
+																	Intent intent=new Intent();
+																	intent.setClass(getApplicationContext(), QuizActivity.class);
+																	intent.putExtra("contentid",contentid );
+																	intent.putExtra("time", quiztime);
+																	startActivity(intent);
+																}
 															}
 															else
 															{
-															Constants.showMsg(content, getApplicationContext());	
+																Constants.showMsg(content, getApplicationContext());	
 															}
+															
+															dialog.dismiss();
+															
 
 														}
 													});

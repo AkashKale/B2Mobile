@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/remaining_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:text="0"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/remaining_time"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:text="question" />
+
+    <Button
+        android:id="@+id/submit_quiz_answer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="55dp"
+        android:text="Submit" />
+
+    <TextView
+        android:id="@+id/op1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/op3"
+        android:layout_below="@+id/question"
+        android:layout_marginTop="22dp"
+        android:text="op1" />
+
+    <TextView
+        android:id="@+id/op2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/op1"
+        android:layout_alignBottom="@+id/op1"
+        android:layout_alignLeft="@+id/op4"
+        android:text="op2" />
+
+    <TextView
+        android:id="@+id/op3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/submit_quiz_answer"
+        android:text="op3" />
+
+    <TextView
+        android:id="@+id/op4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/op3"
+        android:layout_alignBottom="@+id/op3"
+        android:layout_toRightOf="@+id/submit_quiz_answer"
+        android:text="op4" />
+
+</RelativeLayout>

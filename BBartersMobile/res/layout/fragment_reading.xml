@@ -1,17 +1,20 @@
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:staggered="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bbarters.bbartersmobile.ReadingFragment" >
+    tools:context="com.bbarters.bbartersmobile.ReadingFragment" xmlns:app="http://schemas.android.com/apk/res/com.bbarters.bbartersmobile">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <com.origamilabs.library.views.StaggeredGridView
+<com.etsy.android.grid.StaggeredGridView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/staggeredGridView1"
-        staggered:numColumns="2"
-        staggered:drawSelectorOnTop="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_width="match_parent"  
+        android:layout_height="match_parent" 
+        app:item_margin="8dp"
+        app:column_count="2" /> 
+        
 </FrameLayout>

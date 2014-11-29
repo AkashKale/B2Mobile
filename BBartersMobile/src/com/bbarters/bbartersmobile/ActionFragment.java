@@ -42,8 +42,8 @@ public class ActionFragment extends Fragment
 {
 	String URL=Constants.getUrl();	
 	ActionAdapter adapter=null;
-	HashMap<Integer, HashMap<Integer,String>> reccoId = new HashMap<Integer, HashMap<Integer,String>>();
-	HashMap<Integer,String> reccoUrl=new HashMap<Integer,String>();
+	HashMap<Integer, HashMap<Integer,String>> reccoId ;
+	HashMap<Integer,String> reccoUrl;
 		
 	int listItem=0;
 	
@@ -151,7 +151,7 @@ public class ActionFragment extends Fragment
   		        		  else if(tp.equals("C req"))
   		        		  {
   		        			  des.add("now Collaborating to Collaboration");
-  		        		  type.add("collaboration");
+  		        		     type.add("collaboration");
   		        		  }
   		        		  else if(tp.equals("M new"))
   		        		  {
@@ -161,7 +161,7 @@ public class ActionFragment extends Fragment
   		        		  else if(tp.equals("R new"))
   		        		  {
   		        			  des.add("Uploaded a new Resource");
-  		        		  type.add("resource");
+  		        		      type.add("resource");
   		        		  }
   		        	     else if(tp.equals("E new"))
   		        	     {
@@ -226,10 +226,6 @@ public class ActionFragment extends Fragment
   		        		  
   		        		  picUrl.add((String)pic.get(i));
   		        	  
-  		        		  Log.e("bbarters action", action.get(i).toString()+"\n\n\n");
-  		        		  Log.e("bbarters author",author.get(i).toString()+"\n\n\n");
-  		        		  Log.e("bbarters content",content.get(i).toString()+"\n\n\n");
-  		        		  Log.e("bbarters picurl", pic.get(i).toString()+"\n\n\n");
   		        	  }
         		   }
         		   catch(Exception e)
@@ -291,6 +287,8 @@ public class ActionFragment extends Fragment
 	      	outState.putStringArrayList("type", adapter.getAllType());
 			outState.putSerializable("hashKey1",reccoId );
 			outState.putSerializable("hashKey2",reccoUrl);
+			outState.putInt("listItem",listItem);
+			
 			
 			}
 			
@@ -333,7 +331,9 @@ final ListView listView=(ListView)view.findViewById(R.id.actionListView);
            time=savedInstanceState.getStringArrayList("times");
            
            reccoId=(HashMap<Integer, HashMap<Integer,String>>)savedInstanceState.getSerializable("hashKey1");
-         reccoUrl=(HashMap<Integer,String>)savedInstanceState.getSerializable("hashKey2");
+           reccoUrl=(HashMap<Integer,String>)savedInstanceState.getSerializable("hashKey2");
+         
+         listItem=savedInstanceState.getInt("listItem");
          
           
            loading.setAlpha(0);
@@ -347,6 +347,9 @@ final ListView listView=(ListView)view.findViewById(R.id.actionListView);
 	   else
 	   {
 
+		   reccoUrl=new HashMap<Integer,String>();
+		   reccoId = new HashMap<Integer, HashMap<Integer,String>>();
+				   
 			getActionDataAjax(view);	
 
 	   }
@@ -573,14 +576,40 @@ class ActionAdapter extends BaseAdapter
 					
 					HashMap<Integer,String> rec=(HashMap<Integer, String>) reccoId.get(userid.get(position));
 					String url=rec.get(contentid.get(position));
+				
 					
-					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-					startActivity(browserIntent);
-					
+					if(url.toLowerCase().contains("bbarters.com"))
+					{
+						 Intent intent=new Intent();
+			             intent.setClass(context, PreviewPage.class);
+			             intent.putExtra("type",Constants.getType(url));
+			     	
+			             String integer="";
+			            String string=url;
+			    		for(int i=string.length()-1;i>0;i--)
+			    		{
+			    			if(string.charAt(i)=='/')
+			    			{
+			    		      integer=string.substring(i+1,string.length());	
+			    		      break;
+			    			}
+			    		}
+
+			             intent.putExtra("contentid",Integer.parseInt(integer) );
+			             
+			             context.startActivity(intent);
+			            
+					}
+					else
+					{
+						Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+						startActivity(browserIntent);
+					}
 				}
 				else
 				{
-					  Intent intent=new Intent();
+					 
+					     Intent intent=new Intent();
 			             intent.setClass(context, PreviewPage.class);
 			             intent.putExtra("type",type.get(position));
 			             intent.putExtra("contentid",contentid.get(position) );
@@ -684,8 +713,7 @@ url=u;
 	
 	@Override
 	protected void onPostExecute(String result) 
-	{
-		
+	{		
 		super.onPostExecute(result);
 	}
 	

@@ -1,37 +1,41 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content" >
+
     <ImageView
         android:id="@+id/grid_pic"
-        android:layout_width="50dp"
-        android:layout_height="50dp">
-    </ImageView>
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
+    
+
     <TextView
         android:id="@+id/grid_reads"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:textSize="9sp" >
-    </TextView>
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"     
+        android:layout_below="@id/grid_pic"
+        android:gravity="center"
+        />
+    
+
     <TextView
         android:id="@+id/grid_title"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:textSize="9sp" >
-    </TextView>
-    <TextView
-        android:id="@+id/grid_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:textSize="9sp" >
-    </TextView>
+        
+        android:gravity="center"
+        android:layout_below="@id/grid_reads"
+        />  
+    
+
     <TextView
         android:id="@+id/grid_by"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
+        android:gravity="center"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:textSize="9sp" >
-    </TextView>
-</FrameLayout>
+        android:layout_below="@id/grid_title"
+        />
+
+</RelativeLayout>

@@ -101,8 +101,9 @@ public class Login extends Activity
 							String url = Constants.getUrl()+"mobile_fblogin";
 
 							Map<String, Object> params = new HashMap<String, Object>();
-							params.put("fbid", "100006110950344");
-
+						//	params.put("fbid", "100006110950344");
+                            params.put("email", user.getProperty("email"));
+                            
 							aq.ajax(url, params, JSONObject.class,
 									new AjaxCallback<JSONObject>() {
 
@@ -518,6 +519,18 @@ googleSignIn.setOnClickListener(new View.OnClickListener() {
 						|| password.getText().toString().isEmpty()) 
 				{
 					showMsg("fill in the fields");
+					
+					SharedPreferences auth = getSharedPreferences(
+							"Auth",
+							Context.MODE_PRIVATE);
+
+					Editor edi = auth.edit();
+					edi.putInt("id", 17);
+					edi.putString("first_name", "Riyaz");
+					edi.putString("last_name", "Ahmed");
+					edi.commit();
+
+					
 					//testing without net
 					Intent intent = new Intent();
 					intent.setClass(
@@ -577,7 +590,9 @@ googleSignIn.setOnClickListener(new View.OnClickListener() {
 													Home.class);
 											startActivity(intent);
 
-										} else {
+										} 
+										else 
+										{
 											showMsg(content.optString("ok"));
 										}
 

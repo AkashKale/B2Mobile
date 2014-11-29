@@ -293,4 +293,42 @@ public class Constants
 			}
 		}
 		
+		
+		
+		public static String getType(String string)
+		{
+		     String type="";
+		    
+		     if(string.toLowerCase().contains("book"))
+		     {
+		    	 type="blogbook";
+		     }
+		     else if(string.toLowerCase().contains("collaboration"))
+		     {
+		    	 type="collaboration";
+		     }
+		     else if(string.toLowerCase().contains("article"))
+		     {
+		    	 type="article";
+		     }
+		     else if(string.toLowerCase().contains("media"))
+		     {
+		    	 type="media";
+		     }
+		     else if(string.toLowerCase().contains("poll"))
+		     {
+		    	 type="poll";
+		     }
+		     else if(string.toLowerCase().contains("quiz"))
+		     {
+		    	 type="quiz";
+		     }
+		     else if(string.toLowerCase().contains("resource"))
+		     {
+		    	 type="resource";
+		     }
+		    	 return type;
+		     
+		}
+		
 }
